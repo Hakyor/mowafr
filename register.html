@@ -1,0 +1,70 @@
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0096">
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <title>تسجيل جديد - مُوفّر</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h2><i class="fas fa-user-plus"></i> تسجيل حساب جديد</h2>
+                <p>انضم إلى مُوفّر مجاناً وابدأ التوفير</p>
+            </div>
+            
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label for="fullName"><i class="fas fa-user"></i> الاسم الكامل</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="محمد أحمد" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
+                    <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone"><i class="fas fa-phone"></i> رقم الهاتف (اختياري)</label>
+                    <input type="tel" id="phone" name="phone" placeholder="01XXXXXXXXX">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> كلمة المرور</label>
+                    <input type="password" id="password" name="password" placeholder="أدخل كلمة مرور قوية" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword"><i class="fas fa-lock"></i> تأكيد كلمة المرور</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="أعد إدخال كلمة المرور" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="terms" required> أوافق على <a href="#">الشروط والأحكام</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> إنشاء حساب
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>لديك حساب بالفعل؟ <a href="login.html">سجل الدخول</a></p>
+                <p><a href="index.html"><i class="fas fa-arrow-right"></i> العودة للصفحة الرئيسية</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/mobile.js"></script>
+</body>
+</html>

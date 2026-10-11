@@ -1,0 +1,314 @@
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0096">
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <title>مُوفّر - توفير شحن عداد الكهرباء المصري</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>مُوفّر</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="index.html" class="active"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="login.html"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>
+                <a href="register.html"><i class="fas fa-user-plus"></i> تسجيل جديد</a>
+                <a href="#features"><i class="fas fa-star"></i> المميزات</a>
+                <a href="#how-it-works"><i class="fas fa-question-circle"></i> كيف يعمل</a>
+            </div>
+            
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- قسم الهيرو -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>وفر شحن عداد الكهرباء <span class="highlight">حتى 40%</span></h1>
+                <p>حاسبة ذكية تعتمد على شرائح الكهرباء المصرية 2026 تساعدك على إدارة استهلاكك وتوفير شحن العداد</p>
+                
+                <div class="cta-buttons">
+                    <a href="register.html" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i> ابدأ الآن مجاناً
+                    </a>
+                    <a href="#calculator" class="btn btn-secondary">
+                        <i class="fas fa-calculator"></i> جرب الحاسبة
+                    </a>
+                </div>
+            </div>
+            
+            <div class="hero-image">
+                <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="عداد كهرباء" width="400">
+            </div>
+        </div>
+    </section>
+
+    <!-- حاسبة سريعة -->
+    <section id="calculator" class="quick-calculator">
+        <div class="container">
+            <h2><i class="fas fa-calculator"></i> حاسبة سريعة</h2>
+            <p>جرب الحاسبة الآن بدون تسجيل (للاسترشاد فقط)</p>
+            
+            <div class="calculator-form">
+                <div class="form-group">
+                    <label for="balance"><i class="fas fa-coins"></i> الرصيد الحالي (جنيه)</label>
+                    <input type="number" id="balance" placeholder="مثال: 500" min="0" step="10" value="500">
+                </div>
+                
+                <div class="form-group">
+                    <label for="consumption"><i class="fas fa-bolt"></i> الاستهلاك الشهري التقريبي (كيلوواط)</label>
+                    <input type="number" id="consumption" placeholder="مثال: 300" min="0" step="10" value="300">
+                </div>
+                
+                <button id="quick-calculate" class="btn btn-primary">
+                    <i class="fas fa-calculator"></i> احسب توفيرك
+                </button>
+                
+                <div id="quick-result" class="result-box" style="display: none;">
+                    <h3><i class="fas fa-chart-line"></i> النتيجة</h3>
+                    <div class="result-content">
+                        <p>الرصيد سينفذ بعد: <strong><span id="days-left">0</span> يوم</strong></p>
+                        <p>التكلفة الشهرية: <strong><span id="monthly-cost">0</span> جنيه</strong></p>
+                        <p>الشريحة الحالية: <strong><span id="current-slab">-</span></strong></p>
+                    </div>
+                    <p class="note">للحصول على نتائج دقيقة، سجل وقم بإدخال أجهزتك الفعلية</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- المميزات -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2><i class="fas fa-star"></i> مميزات موقع مُوفّر</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3>حاسبة دقيقة</h3>
+                    <p>تعتمد على شرائح الكهرباء المصرية 2026 بدقة، مع حساب فرق الشرائح وإلغاء الدعم</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>تتبع استهلاكي</h3>
+                    <p>احفظ تاريخ استهلاكك وقارن بين الأشهر لترى تطور استهلاكك</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>إشعارات ذكية</h3>
+                    <p>تنبيه عند اقتراب نفاذ الرصيد ونصائح مخصصة لتوفير الاستهلاك</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>نصائح مخصصة</h3>
+                    <p>توصيات ذكية بناءً على أجهزتك وأنماط استهلاكك</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- كيف يعمل -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2><i class="fas fa-question-circle"></i> كيف يعمل موقع مُوفّر؟</h2>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>سجل حساب مجاني</h3>
+                    <p>أنشئ حسابك في دقيقة واحدة</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>أدخل أجهزتك</h3>
+                    <p>أدخل أجهزتك المنزلية واستهلاكها وساعات التشغيل</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>احصل على تحليل كامل</h3>
+                    <p>تحليل استهلاكك وتوصيات توفير مخصصة</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>تتبع ووفر</h3>
+                    <p>راقب استهلاكك بمرور الوقت ووفر في فواتيرك</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- شرائح الكهرباء 2026 -->
+    <section class="tariffs">
+        <div class="container">
+            <h2><i class="fas fa-file-invoice"></i> شرائح الكهرباء المنزلية 2026</h2>
+            
+            <div class="tariff-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الشريحة</th>
+                            <th>الاستهلاك (كيلوواط)</th>
+                            <th>السعر (لكل كيلوواط)</th>
+                            <th>ملاحظات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>الأولى</td>
+                            <td>0 - 50</td>
+                            <td>68 قرش</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>الثانية</td>
+                            <td>51 - 100</td>
+                            <td>78 قرش</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>الثالثة</td>
+                            <td>0 - 200</td>
+                            <td>95 قرش</td>
+                            <td>تراكمي</td>
+                        </tr>
+                        <tr>
+                            <td>الرابعة</td>
+                            <td>201 - 350</td>
+                            <td>1.55 جنيه</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>الخامسة</td>
+                            <td>351 - 650</td>
+                            <td>1.95 جنيه</td>
+                            <td>-</td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>السادسة</td>
+                            <td>651 - 1000</td>
+                            <td>2.10 جنيه</td>
+                            <td>خصم 378 ج.م كفرق محاسبة</td>
+                        </tr>
+                        <tr class="important-row">
+                            <td>السابعة</td>
+                            <td>أكثر من 1000</td>
+                            <td>2.23 جنيه</td>
+                            <td>تحاسب من الصفر (إلغاء دعم)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- الفوتر -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-bolt"></i> مُوفّر</h3>
+                    <p>منصة مصرية لمساعدة المواطنين على إدارة استهلاك الكهرباء وتوفير شحن العدادات مسبقة الدفع</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="login.html">تسجيل الدخول</a></li>
+                        <li><a href="register.html">تسجيل جديد</a></li>
+                        <li><a href="#features">المميزات</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>اتصل بنا</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> hakyorelekiaby@gmail.com</li>
+                        <li><i class="fas fa-phone"></i> +201017753052</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2026 مُوفّر - جميع الحقوق محفوظة | تم التحديث وفق أسعار شرائح الكهرباء 2026</p>
+            </div>
+        </div>
+    </footer>
+<script>
+// تحديث الحاسبة السريعة في الصفحة الرئيسية
+document.addEventListener('DOMContentLoaded', function() {
+    const quickCalculateBtn = document.getElementById('quick-calculate');
+    
+    if (quickCalculateBtn) {
+        quickCalculateBtn.addEventListener('click', function() {
+            const balance = parseFloat(document.getElementById('balance').value) || 0;
+            const consumption = parseFloat(document.getElementById('consumption').value) || 0;
+            
+            if (balance <= 0 || consumption <= 0) {
+                alert('يرجى إدخال قيم صحيحة');
+                return;
+            }
+            
+            // استخدام الآلة الحاسبة العامة
+            if (window.ElectricityCalculator) {
+                const monthlyCost = window.ElectricityCalculator.calculateElectricityCost(consumption);
+                const daysLeft = monthlyCost > 0 ? Math.floor((balance / monthlyCost) * 30) : 0;
+                const currentSlab = window.ElectricityCalculator.getCurrentSlab(consumption);
+                
+                document.getElementById('days-left').textContent = daysLeft;
+                document.getElementById('monthly-cost').textContent = monthlyCost.toFixed(2);
+                document.getElementById('current-slab').textContent = currentSlab;
+                
+                document.getElementById('quick-result').style.display = 'block';
+            }
+        });
+    }
+    
+    // التحقق من حالة تسجيل الدخول
+    if (window.Auth && window.Auth.isLoggedIn()) {
+        // تحديث روابط التنقل
+        const navLinks = document.querySelector('.nav-links');
+        if (navLinks) {
+            navLinks.innerHTML = `
+                <a href="index.html" class="active"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                <a href="data-entry.html"><i class="fas fa-edit"></i> إدخال البيانات</a>
+                <a href="#" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+            `;
+        }
+    }
+});
+</script>
+    <script src="js/calculator.js"></script>
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/mobile.js"></script>
+</body>
+</html>

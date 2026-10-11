@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0096">
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <title>نتائج التحليل - مُوفّر</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="dashboard">
+    <!-- شريط التنقل العلوي (نفس الشريط الموجود في كل الصفحات) -->
+    <header class="dashboard-header">
+        <div class="container">
+            <nav class="dashboard-nav">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>مُوفّر</span>
+                </a>
+                
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar">?</div>
+                    <div>
+                        <p style="font-weight: 600;" id="user-name">مرحباً</p>
+                        <p style="font-size: 14px; color: var(--gray-color);" id="user-since">...</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-links">
+                    <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                    <a href="data-entry.html"><i class="fas fa-edit"></i> إدخال البيانات</a>
+                    <a href="history.html" class="active"><i class="fas fa-history"></i> السجل</a>
+                    <a href="help-guide.html"><i class="fa fa-question-circle"></i> دليل المساعدة</a>
+                    <a href="profile.html"><i class="fas fa-user-circle"></i> حسابك</a>
+                    <a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> خروج</a>
+                </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- محتوى صفحة النتائج والتحليل -->
+    <main class="dashboard-content">
+        <div class="container">
+            <h1 style="margin-bottom: 30px;"><i class="fas fa-chart-pie"></i> تحليل الاستهلاك المتقدم</h1>
+            
+            <!-- بطاقات الملخص السريع -->
+            <div class="dashboard-grid" style="margin-bottom: 30px;">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-alt"></i> هذه الفترة</h3>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <p style="color: var(--gray-color);">الاستهلاك</p>
+                            <p style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="current-period-consumption">0</p>
+                            <small>ك.و/س</small>
+                        </div>
+                        <div>
+                            <p style="color: var(--gray-color);">التكلفة</p>
+                            <p style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="current-period-cost">0</p>
+                            <small>ج.م</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> مقارنة بالشهر الماضي</h3>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; font-weight: 700; color: var(--primary-color);" id="comparison-percentage">0%</div>
+                        <p id="comparison-message">لا توجد بيانات كافية</p>
+                        <div style="margin-top: 15px; background: #f8f9fa; padding: 10px; border-radius: 10px;">
+                            <span id="comparison-amount">0 ج.م</span> <span id="comparison-direction">تغيير</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tachometer-alt"></i> مؤشر الأداء</h3>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="position: relative; display: inline-block;">
+                            <svg width="120" height="120">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="#e0e0e0" stroke-width="12"/>
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="#0f0096" stroke-width="12" 
+                                        stroke-dasharray="339.292" stroke-dashoffset="169.646" id="performance-circle"
+                                        transform="rotate(-90 60 60)"/>
+                            </svg>
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                <span style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="performance-score">75</span>
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <p style="margin-top: 15px;" id="performance-message">أداء جيد</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الرسوم البيانية -->
+            <div class="dashboard-card" style="margin-bottom: 30px;">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> تطور الاستهلاك الشهري</h3>
+                </div>
+                <div style="height: 400px; position: relative;">
+                    <canvas id="consumptionHistoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- توزيع الاستهلاك والمقارنات -->
+            <div class="dashboard-grid" style="margin-bottom: 30px;">
+                <!-- توزيع الأجهزة -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> توزيع الاستهلاك حسب الأجهزة</h3>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="appliancesPieChart"></canvas>
+                    </div>
+                    <div id="top-consumer" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                        <!-- يتم تعبئتها بواسطة JavaScript -->
+                    </div>
+                </div>
+
+                <!-- توزيع الشرائح -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-layer-group"></i> توزيع الشرائح</h3>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="slabsChart"></canvas>
+                    </div>
+                    <div id="slab-warning" style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 10px; display: none;">
+                        <i class="fas fa-exclamation-triangle" style="color: #F57C00;"></i>
+                        <span id="slab-warning-message"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تحليل متقدم وتوقعات -->
+            <div class="dashboard-grid" style="margin-bottom: 30px;">
+                <!-- توقعات الشهر القادم -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-magic"></i> توقعات الشهر القادم</h3>
+                    </div>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="display: flex; justify-content: space-around; margin-bottom: 30px;">
+                            <div>
+                                <p style="color: var(--gray-color);">متوقع</p>
+                                <p style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="predicted-consumption">0</p>
+                                <small>ك.و/س</small>
+                            </div>
+                            <div>
+                                <p style="color: var(--gray-color);">التكلفة</p>
+                                <p style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="predicted-cost">0</p>
+                                <small>ج.م</small>
+                            </div>
+                        </div>
+                        <div style="background: #E8F5E9; padding: 20px; border-radius: 15px;">
+                            <p style="margin: 0;" id="prediction-insight">تحليل التوقعات...</p>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <span class="confidence-badge" id="prediction-confidence">عالية</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- فرص التوفير المحتملة -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-coins"></i> فرص التوفير المحتملة</h3>
+                        <span style="background: #0f0096; color: white; padding: 5px 15px; border-radius: 20px;" id="total-savings-potential">0 ج.م</span>
+                    </div>
+                    <div style="max-height: 300px; overflow-y: auto;" id="savings-opportunities-list">
+                        <!-- يتم تعبئتها بواسطة JavaScript -->
+                        <div style="text-align: center; padding: 40px; color: var(--gray-color);">
+                            <i class="fas fa-chart-line" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <p>جارٍ تحليل فرص التوفير...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تحليل تفصيلي للأجهزة -->
+            <div class="dashboard-card" style="margin-bottom: 30px;">
+                <div class="card-header">
+                    <h3><i class="fas fa-plug"></i> تحليل تفصيلي للأجهزة</h3>
+                    <button class="btn btn-primary" onclick="exportDetailedReport()">
+                        <i class="fas fa-download"></i> تصدير التقرير
+                    </button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 15px; text-align: right;">الجهاز</th>
+                                <th style="padding: 15px; text-align: center;">الاستهلاك اليومي</th>
+                                <th style="padding: 15px; text-align: center;">الاستهلاك الشهري</th>
+                                <th style="padding: 15px; text-align: center;">التكلفة الشهرية</th>
+                                <th style="padding: 15px; text-align: center;">نسبة من الإجمالي</th>
+                                <th style="padding: 15px; text-align: center;">توصية</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appliances-analysis-table">
+                            <!-- يتم تعبئتها بواسطة JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- نصائح ذكية مخصصة -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-lightbulb"></i> نصائح ذكية مخصصة لك</h3>
+                </div>
+                <div id="smart-tips-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <!-- يتم تعبئتها بواسطة JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-bolt"></i> مُوفّر</h3>
+                    <p>منصة مصرية لمساعدة المواطنين على إدارة استهلاك الكهرباء وتوفير شحن العدادات مسبقة الدفع</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="dashboard.html">لوحة التحكم</a></li>
+                        <li><a href="data-entry.html">إدخال البيانات</a></li>
+                        <li><a href="help-guide.html">المساعدة</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>اتصل بنا</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> hakyorelekiaby@gmail.com</li>
+                        <li><i class="fas fa-phone"></i> +201017753052</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2026 مُوفّر - جميع الحقوق محفوظة | تم التحديث وفق أسعار شرائح الكهرباء 2026</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- تضمين ملفات JavaScript -->
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/dashboard.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // التحقق من تسجيل الدخول
+            if (!window.Auth || !window.Auth.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // تحميل بيانات المستخدم
+            window.Auth.loadUserData();
+            
+            // تحميل بيانات التحليل
+            loadAnalysisData();
+            
+            // ربط زر تسجيل الخروج
+            const logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.Auth.logout();
+                });
+            }
+        });
+
+        // تحميل بيانات التحليل
+        function loadAnalysisData() {
+            const appliances = window.Auth.getUserAppliances();
+            const history = window.Auth.getUserHistory();
+            const consumptionData = window.Auth.getUserConsumptionData();
+            
+            if (!appliances || appliances.length === 0) {
+                showNoDataMessage();
+                return;
+            }
+            
+            // حساب وتحليل البيانات
+            calculateCurrentPeriod(consumptionData);
+            calculateComparison(history);
+            calculatePerformanceScore(history, consumptionData);
+            createConsumptionChart(history);
+            createAppliancesPieChart(appliances);
+            createSlabsChart(consumptionData);
+            generatePredictions(history, appliances);
+            generateSavingsOpportunities(appliances, consumptionData);
+            generateAppliancesTable(appliances);
+            generateSmartTips(appliances, consumptionData, history);
+        }
+
+        function showNoDataMessage() {
+            document.querySelector('.dashboard-content .container').innerHTML = `
+                <div style="text-align: center; padding: 100px 20px; background: white; border-radius: 30px;">
+                    <i class="fas fa-chart-line" style="font-size: 80px; color: var(--gray-color); margin-bottom: 30px;"></i>
+                    <h2 style="color: var(--dark-color); margin-bottom: 20px;">لا توجد بيانات للتحليل</h2>
+                    <p style="color: var(--gray-color); margin-bottom: 30px;">قم بإضافة أجهزتك وبيانات استهلاكك أولاً للحصول على تحليل متقدم</p>
+                    <a href="data-entry.html" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> إضافة بيانات
+                    </a>
+                </div>
+            `;
+        }
+
+        function calculateCurrentPeriod(consumptionData) {
+            if (!consumptionData) return;
+            
+            document.getElementById('current-period-consumption').textContent = 
+                (consumptionData.monthlyConsumption || 0).toFixed(0);
+            document.getElementById('current-period-cost').textContent = 
+                (consumptionData.monthlyCost || 0).toFixed(0);
+        }
+
+        function calculateComparison(history) {
+            if (!history || history.length < 2) {
+                document.getElementById('comparison-percentage').textContent = '0%';
+                document.getElementById('comparison-message').textContent = 'لا توجد بيانات كافية';
+                return;
+            }
+            
+            const current = history[history.length - 1];
+            const previous = history[history.length - 2];
+            
+            if (!current || !previous) return;
+            
+            const percentageChange = ((current.monthlyConsumption - previous.monthlyConsumption) / previous.monthlyConsumption) * 100;
+            const costChange = current.monthlyCost - previous.monthlyCost;
+            
+            document.getElementById('comparison-percentage').textContent = 
+                (percentageChange > 0 ? '+' : '') + percentageChange.toFixed(1) + '%';
+            document.getElementById('comparison-percentage').style.color = 
+                percentageChange > 0 ? '#D32F2F' : '#0f0096';
+            
+            document.getElementById('comparison-message').textContent = 
+                percentageChange > 0 ? 'زيادة في الاستهلاك' : 'انخفاض في الاستهلاك';
+            
+            document.getElementById('comparison-amount').textContent = 
+                Math.abs(costChange).toFixed(0) + ' ج.م';
+            document.getElementById('comparison-direction').textContent = 
+                costChange > 0 ? 'زيادة' : 'توفير';
+        }
+
+        function calculatePerformanceScore(history, consumptionData) {
+            if (!history || history.length === 0 || !consumptionData) return;
+            
+            // حساب مؤشر الأداء بناءً على عدة عوامل
+            let score = 70; // درجة أساسية
+            
+            // عامل الاستقرار
+            if (history.length > 1) {
+                const variations = [];
+                for (let i = 1; i < history.length; i++) {
+                    const change = Math.abs(history[i].monthlyConsumption - history[i-1].monthlyConsumption) / history[i-1].monthlyConsumption;
+                    variations.push(change);
+                }
+                const avgVariation = variations.reduce((a, b) => a + b, 0) / variations.length;
+                if (avgVariation < 0.1) score += 10;
+                else if (avgVariation > 0.3) score -= 10;
+            }
+            
+            // عامل الشريحة
+            if (consumptionData.monthlyConsumption < 650) score += 15;
+            else if (consumptionData.monthlyConsumption > 1000) score -= 15;
+            
+            // عامل الأيام المتبقية
+            if (consumptionData.remainingDays > 25) score += 10;
+            else if (consumptionData.remainingDays < 10) score -= 10;
+            
+            // تحديث الواجهة
+            score = Math.min(100, Math.max(0, score));
+            document.getElementById('performance-score').textContent = score;
+            
+            const circumference = 2 * Math.PI * 54;
+            const offset = circumference - (score / 100) * circumference;
+            document.getElementById('performance-circle').style.strokeDashoffset = offset;
+            
+            let message = '';
+            if (score >= 85) message = 'أداء ممتاز! استمر في عاداتك الجيدة';
+            else if (score >= 70) message = 'أداء جيد، يمكنك التحسن';
+            else if (score >= 50) message = 'أداء متوسط، حاول تطبيق نصائح التوفير';
+            else message = 'يحتاج تحسين، ركز على تقليل الاستهلاك';
+            
+            document.getElementById('performance-message').textContent = message;
+        }
+
+        function createConsumptionChart(history) {
+            const ctx = document.getElementById('consumptionHistoryChart').getContext('2d');
+            
+            const labels = [];
+            const data = [];
+            
+            // آخر 6 أشهر
+            const last6 = history.slice(-6);
+            last6.forEach(record => {
+                const date = new Date(record.date);
+                labels.push(date.toLocaleDateString('ar-EG', { month: 'short', year: '2-digit' }));
+                data.push(record.monthlyConsumption);
+            });
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'الاستهلاك الشهري (ك.و/س)',
+                        data: data,
+                        borderColor: '#0f0096',
+                        backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createAppliancesPieChart(appliances) {
+            if (!appliances || appliances.length === 0) return;
+            
+            const ctx = document.getElementById('appliancesPieChart').getContext('2d');
+            
+            // حساب الاستهلاك لكل جهاز
+            const applianceData = appliances.map(a => ({
+                name: a.name,
+                consumption: (a.power_kw || 0) * (a.hours || 0) * (a.quantity || 1) * 30
+            }));
+            
+            // ترتيب تنازلي وأخذ أكبر 5 أجهزة
+            const top5 = applianceData.sort((a, b) => b.consumption - a.consumption).slice(0, 5);
+            
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: top5.map(a => a.name),
+                    datasets: [{
+                        data: top5.map(a => a.consumption),
+                        backgroundColor: [
+                            '#0f0096',
+                            '#1976D2',
+                            '#FF9800',
+                            '#7B1FA2',
+                            '#D32F2F'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+            
+            // عرض أعلى جهاز استهلاك
+            const topConsumer = top5[0];
+            document.getElementById('top-consumer').innerHTML = `
+                <strong>الأعلى استهلاكاً:</strong> ${topConsumer.name}<br>
+                <small>يستهلك ${(topConsumer.consumption).toFixed(0)} ك.و/شهر</small>
+            `;
+        }
+
+        function createSlabsChart(consumptionData) {
+            if (!consumptionData || !consumptionData.monthlyConsumption) return;
+            
+            const ctx = document.getElementById('slabsChart').getContext('2d');
+            const consumption = consumptionData.monthlyConsumption;
+            
+            // حساب توزيع الشرائح
+            const slabs = [
+                { name: 'الشريحة 1-3', max: 200, color: '#66BB6A' },
+                { name: 'الشريحة 4', max: 350, color: '#FFA726' },
+                { name: 'الشريحة 5', max: 650, color: '#EF5350' },
+                { name: 'الشريحة 6', max: 1000, color: '#42A5F5' },
+                { name: 'الشريحة 7', max: Infinity, color: '#AB47BC' }
+            ];
+            
+            let remaining = consumption;
+            const distribution = [];
+            const labels = [];
+            
+            for (const slab of slabs) {
+                if (remaining <= 0) break;
+                const prevMax = slabs[slabs.indexOf(slab) - 1]?.max || 0;
+                const slabConsumption = Math.min(remaining, slab.max - prevMax);
+                if (slabConsumption > 0) {
+                    distribution.push(slabConsumption);
+                    labels.push(slab.name);
+                    remaining -= slabConsumption;
+                }
+            }
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: distribution,
+                        backgroundColor: ['#66BB6A', '#FFA726', '#EF5350', '#42A5F5', '#AB47BC'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+            
+            // تحذير إذا كان قريباً من شريحة أعلى
+            if (consumption > 600 && consumption < 650) {
+                document.getElementById('slab-warning').style.display = 'block';
+                document.getElementById('slab-warning-message').textContent = 
+                    'أنت قريب من الشريحة السادسة! تخفيض ' + (650 - consumption).toFixed(0) + 
+                    ' ك.و/شهر يوفر 378 ج.م';
+            } else if (consumption > 950 && consumption < 1000) {
+                document.getElementById('slab-warning').style.display = 'block';
+                document.getElementById('slab-warning-message').textContent = 
+                    'تحذير! أنت قريب من الشريحة السابعة (إلغاء الدعم)';
+            }
+        }
+
+        function generatePredictions(history, appliances) {
+            if (!appliances || appliances.length === 0) return;
+            
+            // حساب الاستهلاك اليومي
+            const dailyConsumption = appliances.reduce((sum, a) => 
+                sum + (a.power_kw || 0) * (a.hours || 0) * (a.quantity || 1), 0);
+            
+            const predictedMonthly = dailyConsumption * 30;
+            const predictedCost = window.ElectricityCalculator ? 
+                window.ElectricityCalculator.calculateElectricityCost(predictedMonthly) : 
+                predictedMonthly * 0.8;
+            
+            document.getElementById('predicted-consumption').textContent = predictedMonthly.toFixed(0);
+            document.getElementById('predicted-cost').textContent = predictedCost.toFixed(0);
+            
+            // تحليل التوقعات
+            let insight = '';
+            let confidence = 'عالية';
+            
+            if (history && history.length > 0) {
+                const lastMonth = history[history.length - 1].monthlyConsumption;
+                const change = ((predictedMonthly - lastMonth) / lastMonth) * 100;
+                
+                if (change > 10) {
+                    insight = `متوقع زيادة ${change.toFixed(1)}% عن الشهر الماضي. حاول تقليل الاستهلاك.`;
+                    confidence = 'متوسطة';
+                } else if (change < -10) {
+                    insight = `متوقع انخفاض ${Math.abs(change).toFixed(1)}% عن الشهر الماضي. أحسنت!`;
+                } else {
+                    insight = 'استهلاك متوقع مشابه للشهر الماضي. استمر على نفس المنوال.';
+                }
+            } else {
+                insight = 'تقدير مبني على أجهزتك الحالية. أدخل سجل سابق لتحسين الدقة.';
+                confidence = 'تقديرية';
+            }
+            
+            document.getElementById('prediction-insight').textContent = insight;
+            document.getElementById('prediction-confidence').textContent = confidence;
+        }
+
+        function generateSavingsOpportunities(appliances, consumptionData) {
+            if (!appliances || appliances.length === 0) return;
+            
+            const opportunities = [];
+            
+            // تحليل فرص التوفير
+            appliances.forEach(a => {
+                const power = a.power_kw || 0;
+                const hours = a.hours || 0;
+                
+                if (a.name.includes('تكييف') && hours > 8) {
+                    opportunities.push({
+                        title: 'تقليل ساعات التكييف',
+                        saving: calculateSaving(power, hours, 2),
+                        description: 'خفض ساعة تشغيل يومياً للتكييف'
+                    });
+                }
+                
+                if (a.name.includes('سخان') && hours > 1) {
+                    opportunities.push({
+                        title: 'ترشيد استخدام السخان',
+                        saving: calculateSaving(power, hours, 0.5),
+                        description: 'تشغيل السخان نصف ساعة فقط قبل الاستخدام'
+                    });
+                }
+                
+                if (a.name.includes('ثلاجة')) {
+                    opportunities.push({
+                        title: 'تحسين كفاءة الثلاجة',
+                        saving: power * 24 * 30 * 0.15 * 0.8,
+                        description: 'ضبط درجة الحرارة المناسبة وتنظيف الملف الخلفي'
+                    });
+                }
+            });
+            
+            // فرصة توفير من الشرائح
+            if (consumptionData && consumptionData.monthlyConsumption > 650) {
+                opportunities.push({
+                    title: 'فرق الشرائح',
+                    saving: 378,
+                    description: 'خفض استهلاكك إلى أقل من 650 ك.و/شهر'
+                });
+            }
+            
+            // ترتيب حسب أكبر توفير
+            opportunities.sort((a, b) => b.saving - a.saving);
+            
+            // عرض أفضل 5 فرص
+            const listContainer = document.getElementById('savings-opportunities-list');
+            let totalSaving = 0;
+            let html = '';
+            
+            opportunities.slice(0, 5).forEach(opp => {
+                totalSaving += opp.saving;
+                html += `
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 15px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="color: var(--primary-color);">${opp.title}</strong>
+                                <p style="margin: 5px 0 0; font-size: 14px; color: var(--gray-color);">${opp.description}</p>
+                            </div>
+                            <span style="background: #0f0096; color: white; padding: 8px 15px; border-radius: 20px; font-weight: 600;">
+                                ${opp.saving.toFixed(0)} ج.م
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (opportunities.length === 0) {
+                html = `
+                    <div style="text-align: center; padding: 40px; color: var(--gray-color);">
+                        <i class="fas fa-check-circle" style="font-size: 48px; color: #0f0096; margin-bottom: 15px;"></i>
+                        <p>لا توجد فرص توفير كبيرة! استهلاكك ممتاز</p>
+                    </div>
+                `;
+            }
+            
+            listContainer.innerHTML = html;
+            document.getElementById('total-savings-potential').textContent = totalSaving.toFixed(0) + ' ج.م';
+        }
+
+        function calculateSaving(power, currentHours, reduceBy) {
+            if (currentHours <= reduceBy) return 0;
+            const newHours = currentHours - reduceBy;
+            const saving = (power * currentHours * 30 - power * newHours * 30) * 0.8;
+            return Math.max(0, saving);
+        }
+
+        function generateAppliancesTable(appliances) {
+            if (!appliances || appliances.length === 0) return;
+            
+            const tbody = document.getElementById('appliances-analysis-table');
+            let html = '';
+            let totalConsumption = 0;
+            
+            appliances.forEach(a => {
+                const daily = (a.power_kw || 0) * (a.hours || 0) * (a.quantity || 1);
+                const monthly = daily * 30;
+                const cost = window.ElectricityCalculator ? 
+                    window.ElectricityCalculator.calculateElectricityCost(monthly) : 
+                    monthly * 0.8;
+                
+                totalConsumption += monthly;
+            });
+            
+            appliances.forEach(a => {
+                const daily = (a.power_kw || 0) * (a.hours || 0) * (a.quantity || 1);
+                const monthly = daily * 30;
+                const cost = window.ElectricityCalculator ? 
+                    window.ElectricityCalculator.calculateElectricityCost(monthly) : 
+                    monthly * 0.8;
+                const percentage = (monthly / totalConsumption * 100).toFixed(1);
+                
+                let recommendation = 'جيد';
+                let recColor = '#0f0096';
+                
+                if (percentage > 30) {
+                    recommendation = 'مرتفع جداً - راجع استخدامه';
+                    recColor = '#D32F2F';
+                } else if (percentage > 20) {
+                    recommendation = 'مرتفع - حاول تقليل التشغيل';
+                    recColor = '#FF9800';
+                }
+                
+                html += `
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 15px;">
+                            <strong>${a.name}</strong>
+                            <small style="display: block; color: var(--gray-color);">${a.quantity || 1} جهاز</small>
+                        </td>
+                        <td style="padding: 15px; text-align: center;">${daily.toFixed(2)} ك.و</td>
+                        <td style="padding: 15px; text-align: center;">${monthly.toFixed(0)} ك.و</td>
+                        <td style="padding: 15px; text-align: center;">${cost.toFixed(0)} ج.م</td>
+                        <td style="padding: 15px; text-align: center;">
+                            <div style="background: #f0f0f0; border-radius: 10px; height: 20px; width: 100%;">
+                                <div style="background: ${recColor}; width: ${percentage}%; height: 100%; border-radius: 10px;"></div>
+                            </div>
+                            <small>${percentage}%</small>
+                        </td>
+                        <td style="padding: 15px; text-align: center; color: ${recColor};">${recommendation}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        function generateSmartTips(appliances, consumptionData, history) {
+            const container = document.getElementById('smart-tips-container');
+            const tips = [];
+            
+            // نصائح مخصصة
+            if (consumptionData && consumptionData.remainingDays < 10) {
+                tips.push({
+                    icon: '⚠️',
+                    title: 'رصيد منخفض',
+                    tip: 'رصيدك سينفذ خلال ' + consumptionData.remainingDays + ' أيام. يفضل الشحن قريباً.'
+                });
+            }
+            
+            if (consumptionData && consumptionData.monthlyConsumption > 600) {
+                tips.push({
+                    icon: '🎯',
+                    title: 'هدف التوفير',
+                    tip: 'خفض ' + (consumptionData.monthlyConsumption - 600).toFixed(0) + ' ك.و فقط يوفر 378 ج.م'
+                });
+            }
+            
+            // نصائح حسب الأجهزة
+            appliances.forEach(a => {
+                if (a.name.includes('تكييف') && a.hours > 8) {
+                    tips.push({
+                        icon: '❄️',
+                        title: 'التكييف',
+                        tip: 'خفض ساعة تشغيل من التكييف يوفر ~' + 
+                            (a.power_kw * 30 * 0.8).toFixed(0) + ' ج.م شهرياً'
+                    });
+                }
+                
+                if (a.name.includes('ثلاجة') && a.power_kw > 0.25) {
+                    tips.push({
+                        icon: '🧊',
+                        title: 'الثلاجة',
+                        tip: 'تأكد من إحكام غلق باب الثلاجة ونظافة الملف الخلفي'
+                    });
+                }
+            });
+            
+            // نصائح عامة
+            tips.push({
+                icon: '💡',
+                title: 'الإضاءة',
+                tip: 'استبدال اللمبات العادية بـ LED يوفر حتى 80% من استهلاك الإضاءة'
+            });
+            
+            tips.push({
+                icon: '⏰',
+                title: 'أوقات الذروة',
+                tip: 'شغل الأجهزة عالية الاستهلاك بعد 11 مساءً لتخفيف الحمل'
+            });
+            
+            // عرض النصائح
+            let html = '';
+            tips.slice(0, 4).forEach(t => {
+                html += `
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; border-right: 5px solid var(--primary-color);">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">${t.icon}</div>
+                        <h4 style="margin-bottom: 10px; color: var(--primary-color);">${t.title}</h4>
+                        <p style="color: var(--gray-color); margin: 0;">${t.tip}</p>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function switchChartType(type) {
+            // يمكن إضافة وظيفة تبديل نوع الرسم البياني
+        }
+
+        function exportDetailedReport() {
+            const user = window.Auth.getCurrentUser();
+            const appliances = window.Auth.getUserAppliances();
+            const history = window.Auth.getUserHistory();
+            
+            let report = 'تقرير تحليل الاستهلاك المفصل - موقع مُوفّر\n';
+            report += '==========================================\n\n';
+            report += 'المستخدم: ' + user.fullName + '\n';
+            report += 'التاريخ: ' + new Date().toLocaleDateString('ar-EG') + '\n\n';
+            
+            report += 'ملخص الاستهلاك:\n';
+            report += '----------------\n';
+            if (history.length > 0) {
+                const latest = history[history.length - 1];
+                report += 'الاستهلاك الشهري: ' + latest.monthlyConsumption.toFixed(0) + ' ك.و/س\n';
+                report += 'التكلفة: ' + latest.monthlyCost.toFixed(0) + ' ج.م\n';
+                report += 'الشريحة: ' + latest.currentSlab + '\n\n';
+            }
+            
+            report += 'تفاصيل الأجهزة:\n';
+            report += '----------------\n';
+            appliances.forEach(a => {
+                report += a.name + ': ' + a.power_kw + ' ك.و × ' + a.hours + ' ساعة = ' + 
+                    (a.power_kw * a.hours * 30).toFixed(0) + ' ك.و/شهر\n';
+            });
+            
+            // إنشاء ملف للتحميل
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'تقرير_تحليل_' + new Date().toISOString().split('T')[0] + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+    <script src="js/mobile.js"></script>
+</body>
+</html>

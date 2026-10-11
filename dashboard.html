@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0096">
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <title>لوحة التحكم - مُوفّر</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body class="dashboard">
+    <!-- شريط التنقل العلوي -->
+    <header class="dashboard-header">
+        <div class="container">
+            <nav class="dashboard-nav">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>مُوفّر</span>
+                </a>
+                
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar">?</div>
+                    <div>
+                        <p style="font-weight: 600;" id="user-name">مرحباً</p>
+                        <p style="font-size: 14px; color: var(--gray-color);" id="user-since">...</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-links">
+                    <a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                    <a href="data-entry.html"><i class="fas fa-edit"></i> إدخال البيانات</a>
+                    <a href="history.html"><i class="fas fa-history"></i> السجل</a>
+                    <a href="help-guide.html"><i class="fa fa-question-circle"></i> دليل المساعدة</a>
+                    <a href="profile.html"><i class="fas fa-user-circle"></i> حسابك</a>
+                    <a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> خروج</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- محتوى لوحة التحكم -->
+    <main class="dashboard-content">
+        <div class="container">
+            <h1 style="margin-bottom: 30px;"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h1>
+            
+            <!-- إشعارات مهمة -->
+            <div class="dashboard-card" id="welcome-alert" style="background-color: #E8F5E9; border-right: 5px solid #0f0096;">
+                <div class="card-header">
+                    <h3><i class="fas fa-info-circle"></i> مرحباً بك</h3>
+                </div>
+                <p id="welcome-message">قم بإدخال بياناتك لبدء استخدام النظام</p>
+            </div>
+            
+            <!-- بطاقات الإحصائيات -->
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-coins"></i> الرصيد الحالي</h3>
+                        <i class="fas fa-coins" style="color: #1976D2; font-size: 24px;"></i>
+                    </div>
+                    <div class="card-value" id="current-balance">0 ج.م</div>
+                    <div class="card-details">
+                        <p>آخر شحن: <span id="last-charge">لم يتم</span></p>
+                        <p>مدة البقاء: <span id="remaining-days">غير محسوب</span></p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bolt"></i> الاستهلاك الشهري</h3>
+                        <i class="fas fa-bolt" style="color: #7B1FA2; font-size: 24px;"></i>
+                    </div>
+                    <div class="card-value" id="monthly-consumption">0 ك.و/س</div>
+                    <div class="card-details">
+                        <p>التكلفة: <span id="monthly-cost">0 ج.م</span></p>
+                        <p>الشريحة: <span id="current-slab">غير محدد</span></p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> معدل التوفير</h3>
+                        <i class="fas fa-chart-line" style="color: #0f0096; font-size: 24px;"></i>
+                    </div>
+                    <div class="card-value" id="savings-rate">0%</div>
+                    <div class="card-details">
+                        <p id="savings-message">بداية استخدام النظام</p>
+                        <p>قيمة التوفير: <span id="savings-amount">0 ج.م</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بطاقة الأيام المتبقية المتقدمة -->
+            <div class="remaining-days-card">
+                <div class="remaining-days-header">
+                    <h3><i class="fas fa-hourglass-half"></i> الأيام المتبقية</h3>
+                    <span class="confidence-badge" id="confidence-badge">عالية</span>
+                </div>
+                
+                <div class="remaining-days-display">
+                    <div class="days-number-container">
+                        <span class="days-number" id="remaining-days-number">0</span>
+                        <span class="days-label">يوم</span>
+                    </div>
+                    
+                    <div class="days-progress">
+                        <div class="progress-ring">
+                            <svg width="120" height="120">
+                                <circle class="progress-ring-bg" cx="60" cy="60" r="54"></circle>
+                                <circle class="progress-ring-fill" cx="60" cy="60" r="54" 
+                                        style="stroke-dasharray: 339.292; stroke-dashoffset: 339.292;"></circle>
+                            </svg>
+                            <div class="progress-text">
+                                <span id="days-percentage">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="remaining-details">
+                    <div class="detail-item">
+                        <span class="detail-label">متوسط الاستهلاك اليومي</span>
+                        <span class="detail-value" id="avg-daily-consumption">0</span>
+                        <span class="detail-unit">ك.و/س</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">التكلفة اليومية</span>
+                        <span class="detail-value" id="daily-cost">0</span>
+                        <span class="detail-unit">ج.م</span>
+                    </div>
+                </div>
+                
+                <div class="remaining-timeline">
+                    <div class="timeline-bar">
+                        <div class="timeline-fill" id="timeline-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="timeline-labels">
+                        <span>اليوم</span>
+                        <span id="timeline-end">بعد 30 يوم</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- الأجهزة المضافة -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-plug"></i> أجهزتي المضافة</h3>
+                    <a href="data-entry.html" class="btn btn-primary" style="padding: 8px 15px;">
+                        <i class="fas fa-plus"></i> إضافة جهاز
+                    </a>
+                </div>
+                
+                <div class="appliances-list" id="appliances-container">
+                    <!-- سيتم تعبئتها بواسطة JavaScript -->
+                </div>
+            </div>
+            
+            <!-- النصائح والتوصيات المتقدمة -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-lightbulb"></i> خطة التوفير الشخصية</h3>
+                    <span style="background: 0f0096; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px;">
+                        <i class="fas fa-coins"></i> <span id="total-saving-potential">0</span> ج.م
+                    </span>
+                </div>
+                <div id="tips-container" style="margin-top: 20px;">
+                    <!-- سيتم تعبئتها بواسطة JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-bolt"></i> مُوفّر</h3>
+                    <p>منصة مصرية لمساعدة المواطنين على إدارة استهلاك الكهرباء وتوفير شحن العدادات مسبقة الدفع</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="dashboard.html">لوحة التحكم</a></li>
+                        <li><a href="data-entry.html">إدخال البيانات</a></li>
+                        <li><a href="help-guide.html">المساعدة</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>اتصل بنا</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> hakyorelekiaby@gmail.com</li>
+                        <li><i class="fas fa-phone"></i> +201017753052</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2026 مُوفّر - جميع الحقوق محفوظة | تم التحديث وفق أسعار شرائح الكهرباء 2026</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- تضمين الملفات الـ JavaScript -->
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/dashboard.js"></script>
+    
+    <script>
+        // ربط زر تسجيل الخروج
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (window.AuthData && window.AuthData.logout) {
+                        window.AuthData.logout();
+                    } else {
+                        sessionStorage.clear();
+                        window.location.href = 'index.html';
+                    }
+                });
+            }
+        });
+    </script>
+    <script src="js/mobile.js"></script>
+</body>
+</html>

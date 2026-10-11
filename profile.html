@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0096">
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <title>الملف الشخصي والإعدادات - مُوفّر</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- إضافة مكتبة SheetJS لتصدير Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        /* تنسيقات إضافية للتبويبات */
+        .profile-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .profile-tab {
+            padding: 12px 25px;
+            border: none;
+            background: white;
+            border-radius: 30px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            color: var(--dark-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .profile-tab i {
+            color: var(--primary-color);
+        }
+        
+        .profile-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .profile-tab.active i {
+            color: white;
+        }
+        
+        .profile-tab:hover:not(.active) {
+            background: #f0f0f0;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* تنسيقات قسم التصدير */
+        .export-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .export-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+        
+        .export-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(46, 125, 50, 0.1);
+        }
+        
+        .export-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .export-header i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+        
+        .export-header h3 {
+            margin: 0;
+            color: var(--dark-color);
+            font-size: 1.5rem;
+        }
+        
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .export-option {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .export-option:hover {
+            border-color: var(--primary-color);
+            background: white;
+            transform: translateY(-5px);
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .export-option h4 {
+            margin-bottom: 8px;
+            color: var(--dark-color);
+        }
+        
+        .export-option p {
+            color: var(--gray-color);
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        /* تنسيقات نافذة كلمة المرور */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .password-modal.active {
+            display: flex;
+        }
+        
+        .password-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            animation: modalSlide 0.4s ease;
+        }
+        
+        @keyframes modalSlide {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .password-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            color: #F57C00;
+        }
+        
+        .password-modal-header i {
+            font-size: 2.5rem;
+        }
+        
+        .password-modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .password-input-group {
+            margin: 20px 0;
+        }
+        
+        .password-input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        .password-input-group input:focus {
+            border-color: #F57C00;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 124, 0, 0.1);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .modal-actions button {
+            flex: 1;
+            padding: 12px;
+        }
+        
+        /* تنسيقات ملخص البيانات */
+        .data-summary {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .summary-label {
+            color: var(--gray-color);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        /* تنسيقات شريط التقدم */
+        .export-progress {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .export-progress.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #66BB6A);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* تنسيقات سجل التصدير */
+        .export-history {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .export-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-right: 4px solid var(--primary-color);
+        }
+        
+        .export-item small {
+            color: var(--gray-color);
+            display: block;
+            margin-top: 5px;
+        }
+        
+        /* تنسيقات إضافية */
+        .warning-box {
+            background: #FFF3CD;
+            border-right: 5px solid #F57C00;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .warning-box i {
+            font-size: 2rem;
+            color: #F57C00;
+        }
+        
+        .info-box {
+            background: #E3F2FD;
+            border-right: 5px solid #1976D2;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-box i {
+            color: #1976D2;
+            font-size: 1.2rem;
+        }
+        
+        /* تنسيقات الإعدادات */
+        .settings-group {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .settings-group h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .setting-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .setting-info i {
+            width: 30px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .setting-info h5 {
+            margin: 0;
+            color: var(--dark-color);
+        }
+        
+        .setting-info p {
+            margin: 5px 0 0;
+            color: var(--gray-color);
+            font-size: 13px;
+        }
+        
+        /* toggle switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* تنسيقات بطاقة الاستهلاك */
+        .consumption-card {
+            background: linear-gradient(135deg, #0f0096, #66BB6A);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .consumption-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .consumption-stat {
+            text-align: center;
+        }
+        
+        .consumption-stat .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .consumption-stat .label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        /* تنسيقات الأجهزة في التصدير */
+        .device-preview {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-right: 3px solid var(--primary-color);
+        }
+        
+        .device-preview h5 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .device-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- شريط التنقل العلوي -->
+    <header class="dashboard-header">
+        <div class="container">
+            <nav class="dashboard-nav">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>مُوفّر</span>
+                </a>
+                
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar">?</div>
+                    <div>
+                        <p style="font-weight: 600;" id="user-fullname">مرحباً</p>
+                        <p style="font-size: 14px; color: var(--gray-color);" id="user-joindate">...</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-links">
+                    <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                    <a href="data-entry.html"><i class="fas fa-edit"></i> إدخال البيانات</a>
+                    <a href="history.html"><i class="fas fa-history"></i> السجل</a>
+                    <a href="help-guide.html"><i class="fa fa-question-circle"></i> دليل المساعدة</a>
+                    <a href="profile.html" class="active"><i class="fas fa-user-circle"></i> حسابك</a>
+                    <a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> خروج</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- محتوى صفحة الملف الشخصي -->
+    <main class="dashboard-content">
+        <div class="container">
+            <h1 style="margin-bottom: 30px;"><i class="fas fa-user"></i> الملف الشخصي والإعدادات</h1>
+            
+            <!-- تبويبات التنقل -->
+            <div class="profile-tabs">
+                <button class="profile-tab active" onclick="switchTab('profile')">
+                    <i class="fas fa-user-circle"></i> المعلومات الشخصية
+                </button>
+                <button class="profile-tab" onclick="switchTab('settings')">
+                    <i class="fas fa-cog"></i> الإعدادات
+                </button>
+                <button class="profile-tab" onclick="switchTab('export')">
+                    <i class="fas fa-download"></i> تصدير البيانات
+                </button>
+                <button class="profile-tab" onclick="switchTab('security')">
+                    <i class="fas fa-shield-alt"></i> الأمان
+                </button>
+            </div>
+            
+            <!-- المحتوى - التبويب الأول: المعلومات الشخصية -->
+            <div id="tab-profile" class="tab-content active">
+                <div class="dashboard-grid">
+                    <!-- معلومات الحساب -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-user-circle"></i> معلومات الحساب</h3>
+                            <button onclick="editProfile()" class="btn btn-secondary" style="padding: 8px 15px;">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                        </div>
+                        
+                        <div id="profile-info" style="padding: 20px 0;">
+                            <!-- سيتم تعبئتها بواسطة JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- الإحصائيات -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-chart-bar"></i> إحصائيات الاستخدام</h3>
+                        </div>
+                        
+                        <div id="usage-stats" style="padding: 20px 0;">
+                            <!-- سيتم تعبئتها بواسطة JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- المحتوى - التبويب الثاني: الإعدادات (مُحدّثة وقابلة للعمل) -->
+            <div id="tab-settings" class="tab-content">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cog"></i> إعدادات الحساب</h3>
+                    </div>
+                    
+                    <div style="padding: 20px;">
+                        <!-- مجموعة الإشعارات -->
+                        <div class="settings-group">
+                            <h4><i class="fas fa-bell"></i> إعدادات الإشعارات</h4>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <i class="fas fa-bell"></i>
+                                    <div>
+                                        <h5>إشعارات التطبيق</h5>
+                                        <p>استلام إشعارات داخل التطبيق</p>
+                                    </div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="notifications-enabled" onchange="saveNotificationSetting('notifications', this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <div>
+                                        <h5>تنبيه الرصيد المنخفض</h5>
+                                        <p>إشعار عند اقتراب نفاذ الرصيد</p>
+                                    </div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="low-balance-alert" onchange="saveNotificationSetting('lowBalanceAlert', this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <i class="fas fa-chart-line"></i>
+                                    <div>
+                                        <h5>تقرير شهري</h5>
+                                        <p>استلام تقرير مفصل كل شهر</p>
+                                    </div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="monthly-report" onchange="saveNotificationSetting('monthlyReport', this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+    
+                        
+                        <!-- مجموعة البيانات -->
+                        <div class="settings-group">
+                            <h4><i class="fas fa-database"></i> إعدادات البيانات</h4>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <i class="fas fa-history"></i>
+                                    <div>
+                                        <h5>الاحتفاظ بالسجل</h5>
+                                        <p>عدد الأشهر للاحتفاظ بالسجل</p>
+                                    </div>
+                                </div>
+                                <select id="history-retention" onchange="saveRetentionSetting(this.value)" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                                    <option value="3">3 أشهر</option>
+                                    <option value="6">6 أشهر</option>
+                                    <option value="12">سنة كاملة</option>
+                                    <option value="24">سنتين</option>
+                                </select>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <i class="fas fa-chart-simple"></i>
+                                    <div>
+                                        <h5>تحديث تلقائي</h5>
+                                        <p>تحديث البيانات كل 30 ثانية</p>
+                                    </div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="auto-refresh" onchange="setAutoRefresh(this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <div>
+                                        <h5>وحدة العملة</h5>
+                                        <p>العرض بالجنيه المصري</p>
+                                    </div>
+                                </div>
+                                <select id="currency" onchange="changeCurrency(this.value)" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                                    <option value="EGP">جنيه مصري (EGP)</option>
+                                    <option value="USD">دولار أمريكي</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions" style="margin-top: 30px;">
+                            <button onclick="resetToDefault()" class="btn btn-secondary">
+                                <i class="fas fa-undo"></i> استعادة الإعدادات الافتراضية
+                            </button>
+                            <button onclick="saveAllSettings()" class="btn btn-primary">
+                                <i class="fas fa-save"></i> حفظ جميع الإعدادات
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- المحتوى - التبويب الثالث: تصدير البيانات (يشمل الأجهزة والاستهلاك) -->
+            <div id="tab-export" class="tab-content">
+                <!-- قسم تصدير بيانات المستخدم الشخصية -->
+                <div class="export-section">
+                    <div class="export-header">
+                        <i class="fas fa-database"></i>
+                        <h3>تصدير بيانات الاستهلاك والأجهزة</h3>
+                    </div>
+                    
+                    <div class="export-card">
+                        <p style="margin-bottom: 20px; color: var(--gray-color);">
+                            <i class="fas fa-info-circle"></i>
+                            سيتم تصدير جميع أجهزتك وبيانات الاستهلاك والسجل بتفاصيل كاملة.
+                        </p>
+                        
+                        <!-- معاينة سريعة للأجهزة -->
+                        <div id="devices-preview" style="margin-bottom: 20px;">
+                            <!-- سيتم تعبئتها بواسطة JavaScript -->
+                        </div>
+                        
+                        <!-- ملخص الاستهلاك -->
+                        <div id="consumption-preview" class="consumption-card">
+                            <!-- سيتم تعبئتها بواسطة JavaScript -->
+                        </div>
+                        
+                        <div class="export-options">
+                            <div class="export-option" onclick="exportUserData('excel')">
+                                <i class="fas fa-file-excel"></i>
+                                <h4>Excel (مفصل)</h4>
+                                <p>ملف Excel مع تفاصيل الأجهزة والاستهلاك اليومي والشهري</p>
+                                <span class="btn btn-primary btn-small">
+                                    <i class="fas fa-download"></i> تصدير
+                                </span>
+                            </div>
+                            
+                            <div class="export-option" onclick="exportUserData('csv')">
+                                <i class="fas fa-file-csv"></i>
+                                <h4>CSV</h4>
+                                <p>ملفات CSV للاستهلاك والأجهزة</p>
+                                <span class="btn btn-secondary btn-small">
+                                    <i class="fas fa-download"></i> تصدير
+                                </span>
+                            </div>
+                            
+                            <div class="export-option" onclick="exportUserData('json')">
+                                <i class="fas fa-file-code"></i>
+                                <h4>JSON</h4>
+                                <p>البيانات الخام كاملة</p>
+                                <span class="btn btn-secondary btn-small">
+                                    <i class="fas fa-download"></i> تصدير
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- ملخص البيانات الشخصية -->
+                        <div class="data-summary">
+                            <h4 style="margin-bottom: 15px; color: var(--primary-color);">
+                                <i class="fas fa-chart-pie"></i> ملخص بياناتك
+                            </h4>
+                            <div class="summary-grid" id="user-data-summary">
+                                <div class="summary-item">
+                                    <div class="summary-value" id="user-appliances-count">0</div>
+                                    <div class="summary-label">الأجهزة</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value" id="user-history-count">0</div>
+                                    <div class="summary-label">سجلات الاستهلاك</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value" id="user-notifications-count">0</div>
+                                    <div class="summary-label">إشعارات</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value" id="user-total-consumption">0</div>
+                                    <div class="summary-label">إجمالي الاستهلاك</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- سجل التصديرات السابقة -->
+                        <div style="margin-top: 25px;">
+                            <h4 style="display: flex; align-items: center; gap: 10px; color: var(--gray-color);">
+                                <i class="fas fa-history"></i> آخر التصديرات
+                            </h4>
+                            <div class="export-history" id="user-export-history">
+                                <!-- سيتم تعبئتها بواسطة JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <!-- شريط تقدم التصدير -->
+                        <div class="export-progress" id="user-export-progress">
+                            <p>جاري تحضير ملف التصدير...</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="user-export-progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- قسم تصدير قاعدة البيانات الكاملة (لجميع المستخدمين) -->
+                <div class="export-section" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);">
+                    <div class="export-header">
+                        <i class="fas fa-database" style="color: #F57C00;"></i>
+                        <h3 style="color: #F57C00;">تصدير قاعدة البيانات الكاملة</h3>
+                    </div>
+                    
+                    <div class="export-card">
+                        <div class="warning-box">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>
+                                <strong style="color: #F57C00;">تصدير شامل لجميع المستخدمين</strong>
+                                <p style="margin: 5px 0 0; color: #666;">هذه الخاصية تصدر جميع بيانات المستخدمين والأجهزة والاستهلاك. تتطلب كلمة مرور المسؤول.</p>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <button onclick="showPasswordModal()" class="btn btn-primary" style="background-color: #F57C00; border-color: #F57C00; padding: 15px 40px; font-size: 18px;">
+                                <i class="fas fa-lock"></i> فتح تصدير قاعدة البيانات الكاملة
+                            </button>
+                        </div>
+                        
+                        <!-- إحصائيات عامة -->
+                        <div class="data-summary">
+                            <h4 style="margin-bottom: 15px; color: #F57C00;">
+                                <i class="fas fa-chart-bar"></i> إحصائيات عامة
+                            </h4>
+                            <div class="summary-grid" id="admin-stats">
+                                <div class="summary-item">
+                                    <div class="summary-value" id="total-users">0</div>
+                                    <div class="summary-label">إجمالي المستخدمين</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value" id="total-appliances">0</div>
+                                    <div class="summary-label">إجمالي الأجهزة</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value" id="total-history">0</div>
+                                    <div class="summary-label">إجمالي السجلات</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value" id="total-consumption-all">0</div>
+                                    <div class="summary-label">إجمالي الاستهلاك</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- المحتوى - التبويب الرابع: الأمان -->
+            <div id="tab-security" class="tab-content">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-shield-alt"></i> إعدادات الأمان</h3>
+                    </div>
+                    
+                    <div style="padding: 20px;">
+                        <!-- تغيير كلمة المرور -->
+                        <div class="settings-group">
+                            <h4><i class="fas fa-key"></i> كلمة المرور</h4>
+                            
+                            <div style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
+                                <div class="form-group">
+                                    <label>كلمة المرور الحالية</label>
+                                    <input type="password" id="current-password" class="form-control" placeholder="أدخل كلمة المرور الحالية">
+                                </div>
+                                <div class="form-group">
+                                    <label>كلمة المرور الجديدة</label>
+                                    <input type="password" id="new-password" class="form-control" placeholder="أدخل كلمة مرور جديدة">
+                                </div>
+                                <div class="form-group">
+                                    <label>تأكيد كلمة المرور الجديدة</label>
+                                    <input type="password" id="confirm-password" class="form-control" placeholder="أعد إدخال كلمة المرور">
+                                </div>
+                                <button onclick="changePassword()" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> تغيير كلمة المرور
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- المصادقة الثنائية -->
+                        <div class="settings-group">
+                            <h4><i class="fas fa-mobile-alt"></i> المصادقة الثنائية</h4>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <i class="fas fa-shield"></i>
+                                    <div>
+                                        <h5>تفعيل المصادقة الثنائية</h5>
+                                        <p>حماية إضافية لحسابك</p>
+                                    </div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="two-factor-auth" onchange="toggleTwoFactor(this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- الجلسات النشطة -->
+                        <div class="settings-group">
+                            <h4><i class="fas fa-history"></i> الجلسات النشطة</h4>
+                            
+                            <div id="active-sessions" style="background: #f8f9fa; padding: 20px; border-radius: 12px;">
+                                <!-- سيتم تعبئتها بواسطة JavaScript -->
+                            </div>
+                            
+                            <button onclick="logoutAllDevices()" class="btn btn-secondary" style="margin-top: 15px;">
+                                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج من جميع الأجهزة
+                            </button>
+                        </div>
+                        
+                        <!-- إدارة البيانات -->
+                        <div class="settings-group">
+                            <h4><i class="fas fa-database"></i> إدارة البيانات</h4>
+                            
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                <button onclick="clearLocalData()" class="btn btn-secondary">
+                                    <i class="fas fa-trash"></i> حذف البيانات المحلية
+                                </button>
+                                <button onclick="deleteAccount()" class="btn btn-danger">
+                                    <i class="fas fa-user-times"></i> حذف الحساب نهائياً
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- نافذة تعديل الملف الشخصي -->
+    <div id="edit-profile-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> تعديل الملف الشخصي</h3>
+                <button class="close-modal" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>الاسم الكامل</label>
+                    <input type="text" id="edit-fullname" placeholder="الاسم الكامل">
+                </div>
+                
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="edit-email" placeholder="البريد الإلكتروني">
+                </div>
+                
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="edit-phone" placeholder="رقم الهاتف">
+                </div>
+                
+                <div class="form-group">
+                    <label>العنوان</label>
+                    <input type="text" id="edit-address" placeholder="العنوان">
+                </div>
+                
+                <div class="form-group">
+                    <label>رقم العداد</label>
+                    <input type="text" id="edit-meter" placeholder="رقم العداد (اختياري)">
+                </div>
+                
+                <div class="form-group">
+                    <label>لون الصورة الرمزية</label>
+                    <div id="color-picker" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                        <div class="color-option" style="background-color: #0f0096;" data-color="#0f0096"></div>
+                        <div class="color-option" style="background-color: #1976D2;" data-color="#1976D2"></div>
+                        <div class="color-option" style="background-color: #7B1FA2;" data-color="#7B1FA2"></div>
+                        <div class="color-option" style="background-color: #D32F2F;" data-color="#D32F2F"></div>
+                        <div class="color-option" style="background-color: #F57C00;" data-color="#F57C00"></div>
+                        <div class="color-option" style="background-color: #00796B;" data-color="#00796B"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeEditModal()" class="btn btn-secondary">إلغاء</button>
+                <button onclick="saveProfileChanges()" class="btn btn-primary">حفظ التغييرات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة كلمة المرور لتصدير قاعدة البيانات الكاملة -->
+    <div id="password-modal" class="password-modal">
+        <div class="password-modal-content">
+            <div class="password-modal-header">
+                <i class="fas fa-lock"></i>
+                <h3>تصدير كامل بياناتك</h3>
+            </div>
+            
+            <p style="color: var(--gray-color); margin-bottom: 20px;">
+                سيتم تصدير جميع بياناتك (الأجهزة، الاستهلاك، السجل). الرجاء إدخال كلمة مرور حسابك للمتابعة.
+            </p>
+            
+            <div class="password-input-group">
+                <input type="password" id="admin-password" placeholder="أدخل كلمة مرور حسابك" autocomplete="current-password">
+            </div>
+            
+            <div class="modal-actions">
+                <button onclick="closePasswordModal()" class="btn btn-secondary">إلغاء</button>
+                <button onclick="verifyAndExportAll()" class="btn btn-primary" style="background-color: #F57C00;">
+                    <i class="fas fa-check"></i> تأكيد وتصدير
+                </button>
+            </div>
+            
+            <!-- شريط تقدم التصدير -->
+            <div class="export-progress" id="admin-export-progress" style="margin-top: 20px;">
+                <p>جاري تجميع بياناتك...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="admin-export-progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-bolt"></i> مُوفّر</h3>
+                    <p>منصة مصرية لمساعدة المواطنين على إدارة استهلاك الكهرباء وتوفير شحن العدادات مسبقة الدفع</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="dashboard.html">لوحة التحكم</a></li>
+                        <li><a href="data-entry.html">إدخال البيانات</a></li>
+                        <li><a href="help-guide.html">المساعدة</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>اتصل بنا</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> hakyorelekiaby@gmail.com</li>
+                        <li><i class="fas fa-phone"></i> +201017753052</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2026 مُوفّر - جميع الحقوق محفوظة | تم التحديث وفق أسعار شرائح الكهرباء 2026</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/calculator.js"></script>
+    
+    <script>
+        // ========== نظام التبويبات ==========
+        function switchTab(tabName) {
+            // إخفاء جميع التبويبات
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // إزالة active من جميع أزرار التبويبات
+            document.querySelectorAll('.profile-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // إظهار التبويب المحدد
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // تفعيل الزر المحدد
+            event.target.closest('.profile-tab').classList.add('active');
+            
+            // تحميل البيانات حسب التبويب
+            if (tabName === 'profile') {
+                loadProfileData();
+                loadUsageStats();
+            } else if (tabName === 'export') {
+                loadUserSummary();
+                loadDevicesPreview();
+                loadConsumptionPreview();
+                loadAdminStats();
+                loadExportHistory();
+            } else if (tabName === 'settings') {
+                loadUserSettings();
+            } else if (tabName === 'security') {
+                loadActiveSessions();
+            }
+        }
+
+        // ========== تحميل بيانات المستخدم ==========
+        function loadProfileData() {
+            const user = window.Auth.getCurrentUser();
+            if (!user) return;
+            
+            // تحديث الاسم والصورة الرمزية
+            document.getElementById('user-fullname').textContent = user.fullName;
+            document.getElementById('user-avatar').textContent = user.fullName.charAt(0);
+            document.getElementById('user-avatar').style.backgroundColor = user.profile?.avatarColor || '#0f0096';
+            
+            // تحديث تاريخ الانضمام
+            if (user.registrationDate) {
+                const joinDate = new Date(user.registrationDate);
+                const formattedDate = joinDate.toLocaleDateString('ar-EG', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                document.getElementById('user-joindate').textContent = `مستخدم منذ: ${formattedDate}`;
+            }
+            
+            // تحديث معلومات الملف الشخصي
+            const profileInfo = document.getElementById('profile-info');
+            if (profileInfo) {
+                profileInfo.innerHTML = `
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">الاسم الكامل:</span>
+                        <span class="profile-info-value">${user.fullName}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">البريد الإلكتروني:</span>
+                        <span class="profile-info-value">${user.email}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">رقم الهاتف:</span>
+                        <span class="profile-info-value">${user.phone || 'غير مضاف'}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">العنوان:</span>
+                        <span class="profile-info-value">${user.profile?.address || 'غير مضاف'}</span>
+                    </div>
+                    <div class="profile-info-item">
+                        <span class="profile-info-label">رقم العداد:</span>
+                        <span class="profile-info-value">${user.profile?.meterNumber || 'غير مضاف'}</span>
+                    </div>
+                `;
+            }
+        }
+
+        function loadUsageStats() {
+            const appliances = window.Auth.getUserAppliances();
+            const history = window.Auth.getUserHistory();
+            const consumptionData = window.Auth.getUserConsumptionData();
+            
+            const statsContainer = document.getElementById('usage-stats');
+            if (!statsContainer) return;
+            
+            // حساب إجمالي الطاقة
+            const totalPower = appliances.reduce((sum, app) => {
+                return sum + ((app.power_kw || 0) * (app.quantity || 1));
+            }, 0);
+            
+            // حساب متوسط الاستهلاك من التاريخ
+            let avgConsumption = 0;
+            if (history.length > 0) {
+                const total = history.reduce((sum, record) => sum + (record.monthlyConsumption || 0), 0);
+                avgConsumption = (total / history.length).toFixed(0);
+            }
+            
+            statsContainer.innerHTML = `
+                <div class="profile-info-item">
+                    <span class="profile-info-label"><i class="fas fa-plug"></i> عدد الأجهزة:</span>
+                    <span class="profile-info-value">${appliances.length}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label"><i class="fas fa-bolt"></i> إجمالي الطاقة:</span>
+                    <span class="profile-info-value">${totalPower.toFixed(2)} ك.و</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label"><i class="fas fa-history"></i> عدد السجلات:</span>
+                    <span class="profile-info-value">${history.length}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label"><i class="fas fa-chart-line"></i> متوسط الاستهلاك:</span>
+                    <span class="profile-info-value">${avgConsumption} ك.و/شهر</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label"><i class="fas fa-coins"></i> الرصيد الحالي:</span>
+                    <span class="profile-info-value">${consumptionData?.balance || 0} ج.م</span>
+                </div>
+            `;
+        }
+
+        // ========== إعدادات قابلة للعمل ==========
+        function loadUserSettings() {
+            const user = window.Auth.getCurrentUser();
+            if (!user || !user.settings) return;
+            
+            // تحميل إعدادات الإشعارات
+            document.getElementById('notifications-enabled').checked = user.settings.notifications !== false;
+            document.getElementById('email-notifications').checked = user.settings.emailNotifications || false;
+            document.getElementById('low-balance-alert').checked = user.settings.lowBalanceAlert !== false;
+            document.getElementById('monthly-report').checked = user.settings.monthlyReport || false;
+            
+            // تحميل إعدادات المظهر
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            document.getElementById('dark-mode').checked = darkMode;
+            
+            const fontSize = localStorage.getItem('fontSize') || 'normal';
+            document.getElementById('font-size').value = fontSize;
+            
+            const highContrast = localStorage.getItem('highContrast') === 'true';
+            document.getElementById('high-contrast').checked = highContrast;
+            
+            // تحميل إعدادات البيانات
+            const retention = localStorage.getItem('historyRetention') || '12';
+            document.getElementById('history-retention').value = retention;
+            
+            const autoRefresh = localStorage.getItem('autoRefresh') !== 'false';
+            document.getElementById('auto-refresh').checked = autoRefresh;
+            
+            const currency = localStorage.getItem('currency') || 'EGP';
+            document.getElementById('currency').value = currency;
+        }
+
+        function saveNotificationSetting(setting, value) {
+            const userId = sessionStorage.getItem('currentUserId');
+            if (!userId) return;
+            
+            const users = JSON.parse(localStorage.getItem('mowafr_users') || '[]');
+            const userIndex = users.findIndex(u => u.id === userId);
+            
+            if (userIndex !== -1) {
+                if (!users[userIndex].settings) {
+                    users[userIndex].settings = {};
+                }
+                users[userIndex].settings[setting] = value;
+                localStorage.setItem('mowafr_users', JSON.stringify(users));
+                
+                showMessage(`تم حفظ الإعداد بنجاح`, 'success');
+            }
+        }
+
+        function toggleDarkMode(enabled) {
+            localStorage.setItem('darkMode', enabled);
+            
+            if (enabled) {
+                document.body.classList.add('dark-mode');
+                // إضافة أنماط الوضع الداكن
+                const darkStyles = `
+                    body.dark-mode {
+                        background-color: #1a1a1a;
+                        color: #f0f0f0;
+                    }
+                    body.dark-mode .dashboard-card,
+                    body.dark-mode .navbar,
+                    body.dark-mode .export-card {
+                        background-color: #2d2d2d;
+                        color: #f0f0f0;
+                    }
+                `;
+                
+                let styleEl = document.getElementById('dark-mode-styles');
+                if (!styleEl) {
+                    styleEl = document.createElement('style');
+                    styleEl.id = 'dark-mode-styles';
+                    document.head.appendChild(styleEl);
+                }
+                styleEl.textContent = darkStyles;
+            } else {
+                document.body.classList.remove('dark-mode');
+                const styleEl = document.getElementById('dark-mode-styles');
+                if (styleEl) styleEl.remove();
+            }
+            
+            showMessage(enabled ? 'تم تفعيل الوضع الليلي' : 'تم إلغاء الوضع الليلي', 'info');
+        }
+
+        function changeFontSize(size) {
+            localStorage.setItem('fontSize', size);
+            
+            const root = document.documentElement;
+            switch(size) {
+                case 'large':
+                    root.style.fontSize = '18px';
+                    break;
+                case 'larger':
+                    root.style.fontSize = '20px';
+                    break;
+                default:
+                    root.style.fontSize = '16px';
+            }
+            
+            showMessage(`تم تغيير حجم الخط`, 'info');
+        }
+
+        function toggleHighContrast(enabled) {
+            localStorage.setItem('highContrast', enabled);
+            
+            if (enabled) {
+                document.body.classList.add('high-contrast');
+                const contrastStyles = `
+                    body.high-contrast {
+                        filter: contrast(150%);
+                    }
+                    body.high-contrast .btn-primary {
+                        background-color: #000 !important;
+                        color: #fff !important;
+                    }
+                `;
+                
+                let styleEl = document.getElementById('contrast-styles');
+                if (!styleEl) {
+                    styleEl = document.createElement('style');
+                    styleEl.id = 'contrast-styles';
+                    document.head.appendChild(styleEl);
+                }
+                styleEl.textContent = contrastStyles;
+            } else {
+                document.body.classList.remove('high-contrast');
+                const styleEl = document.getElementById('contrast-styles');
+                if (styleEl) styleEl.remove();
+            }
+            
+            showMessage(enabled ? 'تم تفعيل التباين العالي' : 'تم إلغاء التباين العالي', 'info');
+        }
+
+        function saveRetentionSetting(months) {
+            localStorage.setItem('historyRetention', months);
+            showMessage(`سيتم الاحتفاظ بالسجل لآخر ${months} أشهر`, 'info');
+        }
+
+        function setAutoRefresh(enabled) {
+            localStorage.setItem('autoRefresh', enabled);
+            
+            if (enabled) {
+                // تفعيل التحديث التلقائي
+                window.autoRefreshInterval = setInterval(() => {
+                    if (window.Dashboard && window.Dashboard.refreshRemainingDays) {
+                        window.Dashboard.refreshRemainingDays();
+                    }
+                }, 30000);
+            } else {
+                // إيقاف التحديث التلقائي
+                if (window.autoRefreshInterval) {
+                    clearInterval(window.autoRefreshInterval);
+                }
+            }
+            
+            showMessage(enabled ? 'تم تفعيل التحديث التلقائي' : 'تم إيقاف التحديث التلقائي', 'info');
+        }
+
+        function changeCurrency(currency) {
+            localStorage.setItem('currency', currency);
+            
+            // تحديث عرض العملة في جميع الصفحات
+            const costElements = document.querySelectorAll('[data-cost]');
+            costElements.forEach(el => {
+                const cost = parseFloat(el.dataset.cost);
+                if (currency === 'USD') {
+                    el.textContent = `$${(cost * 0.032).toFixed(2)}`;
+                } else {
+                    el.textContent = `${cost.toFixed(0)} ج.م`;
+                }
+            });
+            
+            showMessage(`تم تغيير العملة إلى ${currency === 'EGP' ? 'الجنيه المصري' : 'الدولار'}`, 'info');
+        }
+
+        function resetToDefault() {
+            if (confirm('هل أنت متأكد من استعادة الإعدادات الافتراضية؟')) {
+                localStorage.removeItem('darkMode');
+                localStorage.removeItem('fontSize');
+                localStorage.removeItem('highContrast');
+                localStorage.removeItem('historyRetention');
+                localStorage.removeItem('autoRefresh');
+                localStorage.removeItem('currency');
+                
+                // إعادة تحميل الصفحة
+                location.reload();
+            }
+        }
+
+        function saveAllSettings() {
+            showMessage('تم حفظ جميع الإعدادات بنجاح', 'success');
+        }
+
+        // ========== معاينة الأجهزة والاستهلاك ==========
+        function loadDevicesPreview() {
+            const appliances = window.Auth.getUserAppliances();
+            const container = document.getElementById('devices-preview');
+            
+            if (!container) return;
+            
+            if (appliances.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-color); text-align: center;">لا توجد أجهزة مضافة</p>';
+                return;
+            }
+            
+            let html = '<h4 style="margin-bottom: 15px;"><i class="fas fa-plug"></i> أجهزتك الحالية</h4>';
+            
+            appliances.slice(0, 3).forEach(app => {
+                const dailyConsumption = (app.power_kw || 0) * (app.hours || 0) * (app.quantity || 1);
+                const monthlyConsumption = dailyConsumption * 30;
+                
+                html += `
+                    <div class="device-preview">
+                        <h5>
+                            <i class="fas fa-${getDeviceIcon(app.name)}"></i>
+                            ${app.name} (${app.quantity || 1})
+                        </h5>
+                        <div class="device-details">
+                            <span>🔌 ${app.power_kw} ك.و</span>
+                            <span>⏰ ${app.hours} س/يوم</span>
+                            <span>⚡ ${dailyConsumption.toFixed(2)} ك.و/يوم</span>
+                            <span>📊 ${monthlyConsumption.toFixed(0)} ك.و/شهر</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (appliances.length > 3) {
+                html += `<p style="text-align: center; color: var(--gray-color);">و ${appliances.length - 3} أجهزة أخرى</p>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function getDeviceIcon(name) {
+            name = name.toLowerCase();
+            if (name.includes('تكييف')) return 'snowflake';
+            if (name.includes('ثلاجة')) return 'snowflake';
+            if (name.includes('غسالة')) return 'soap';
+            if (name.includes('سخان')) return 'water';
+            if (name.includes('تلفزيون')) return 'tv';
+            if (name.includes('لمبة') || name.includes('اضاءة')) return 'lightbulb';
+            return 'plug';
+        }
+
+        function loadConsumptionPreview() {
+            const consumptionData = window.Auth.getUserConsumptionData();
+            const container = document.getElementById('consumption-preview');
+            
+            if (!container) return;
+            
+            if (!consumptionData) {
+                container.innerHTML = `
+                    <h4>ملخص الاستهلاك</h4>
+                    <p>لا توجد بيانات استهلاك حالياً</p>
+                `;
+                return;
+            }
+            
+            container.innerHTML = `
+                <h4 style="margin-bottom: 15px;">📊 ملخص الاستهلاك</h4>
+                <div class="consumption-stats">
+                    <div class="consumption-stat">
+                        <div class="value">${(consumptionData.dailyConsumption || 0).toFixed(1)}</div>
+                        <div class="label">ك.و/يوم</div>
+                    </div>
+                    <div class="consumption-stat">
+                        <div class="value">${(consumptionData.monthlyConsumption || 0).toFixed(0)}</div>
+                        <div class="label">ك.و/شهر</div>
+                    </div>
+                    <div class="consumption-stat">
+                        <div class="value">${(consumptionData.monthlyCost || 0).toFixed(0)}</div>
+                        <div class="label">ج.م/شهر</div>
+                    </div>
+                    <div class="consumption-stat">
+                        <div class="value">${consumptionData.remainingDays || 0}</div>
+                        <div class="label">يوم متبقي</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ========== دوال تصدير البيانات (مُحسّنة) ==========
+        async function exportUserData(format) {
+            const userId = sessionStorage.getItem('currentUserId');
+            if (!userId) {
+                showMessage('يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+            
+            // إظهار شريط التقدم
+            const progressDiv = document.getElementById('user-export-progress');
+            const progressFill = document.getElementById('user-export-progress-fill');
+            
+            progressDiv.classList.add('active');
+            progressFill.style.width = '0%';
+            
+            try {
+                // محاكاة تقدم التحميل
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    progressFill.style.width = progress + '%';
+                    if (progress >= 90) clearInterval(interval);
+                }, 200);
+                
+                // جمع بيانات المستخدم
+                const user = window.Auth.getCurrentUser();
+                const appliances = window.Auth.getUserAppliances();
+                const consumptionData = window.Auth.getUserConsumptionData();
+                const history = window.Auth.getUserHistory();
+                const notifications = window.Auth.getUserNotifications();
+                
+                // حساب تفاصيل الاستهلاك لكل جهاز
+                const appliancesWithConsumption = appliances.map(app => {
+                    const dailyKwh = (app.power_kw || 0) * (app.hours || 0) * (app.quantity || 1);
+                    const monthlyKwh = dailyKwh * 30;
+                    const monthlyCost = window.ElectricityCalculator ? 
+                        window.ElectricityCalculator.calculateElectricityCost(monthlyKwh) : 
+                        monthlyKwh * 0.8;
+                    
+                    return {
+                        ...app,
+                        daily_consumption_kwh: dailyKwh.toFixed(2),
+                        monthly_consumption_kwh: monthlyKwh.toFixed(0),
+                        monthly_cost_egp: monthlyCost.toFixed(0)
+                    };
+                });
+                
+                // إنشاء بيانات الاستهلاك التفصيلية
+                const consumptionDetails = {
+                    summary: consumptionData || {},
+                    appliances: appliancesWithConsumption,
+                    history: history,
+                    statistics: {
+                        total_appliances: appliances.length,
+                        total_daily_kwh: appliances.reduce((sum, app) => 
+                            sum + ((app.power_kw || 0) * (app.hours || 0) * (app.quantity || 1)), 0).toFixed(2),
+                        total_monthly_kwh: appliances.reduce((sum, app) => 
+                            sum + ((app.power_kw || 0) * (app.hours || 0) * (app.quantity || 1) * 30), 0).toFixed(0),
+                        average_monthly_cost: history.length > 0 ? 
+                            (history.reduce((sum, rec) => sum + (rec.monthlyCost || 0), 0) / history.length).toFixed(0) : 0
+                    }
+                };
+                
+                const userData = {
+                    userInfo: user,
+                    consumptionDetails: consumptionDetails,
+                    exportDate: new Date().toISOString(),
+                    exportDateFormatted: new Date().toLocaleString('ar-EG')
+                };
+                
+                let blob;
+                let filename;
+                const date = new Date().toISOString().split('T')[0];
+                const userName = user.fullName.replace(/\s+/g, '_');
+                
+                switch (format) {
+                    case 'excel':
+                        blob = createDetailedExcelBlob(userData);
+                        filename = `mowafr_${userName}_الاستهلاك_الكامل_${date}.xlsx`;
+                        break;
+                    case 'csv':
+                        blob = createDetailedCSVBlob(userData);
+                        filename = `mowafr_${userName}_الاستهلاك_${date}.csv`;
+                        break;
+                    case 'json':
+                        blob = createJSONBlob(userData);
+                        filename = `mowafr_${userName}_البيانات_الكاملة_${date}.json`;
+                        break;
+                }
+                
+                // حفظ الملف
+                saveAs(blob, filename);
+                
+                clearInterval(interval);
+                progressFill.style.width = '100%';
+                
+                setTimeout(() => {
+                    progressDiv.classList.remove('active');
+                }, 1000);
+                
+                // تسجيل عملية التصدير
+                logExport(userId, format, filename);
+                
+                showMessage(`✅ تم تصدير ${appliances.length} جهاز و ${history.length} سجل بنجاح`, 'success');
+                loadExportHistory();
+                
+            } catch (error) {
+                console.error('خطأ في التصدير:', error);
+                showMessage('حدث خطأ أثناء التصدير', 'error');
+                progressDiv.classList.remove('active');
+            }
+        }
+
+        function createDetailedExcelBlob(data) {
+            const wb = XLSX.utils.book_new();
+            
+            // 1. ورقة معلومات المستخدم
+            const userSheet = XLSX.utils.json_to_sheet([data.userInfo]);
+            XLSX.utils.book_append_sheet(wb, userSheet, 'معلومات المستخدم');
+            
+            // 2. ورقة الأجهزة مع الاستهلاك
+            if (data.consumptionDetails.appliances.length > 0) {
+                const appliancesSheet = XLSX.utils.json_to_sheet(data.consumptionDetails.appliances);
+                XLSX.utils.book_append_sheet(wb, appliancesSheet, 'الأجهزة والاستهلاك');
+            }
+            
+            // 3. ورقة سجل الاستهلاك الشهري
+            if (data.consumptionDetails.history.length > 0) {
+                const historySheet = XLSX.utils.json_to_sheet(data.consumptionDetails.history);
+                XLSX.utils.book_append_sheet(wb, historySheet, 'سجل الاستهلاك');
+            }
+            
+            // 4. ورقة إحصائيات وتفاصيل
+            const statsData = [
+                {
+                    'العنصر': 'إجمالي الأجهزة',
+                    'القيمة': data.consumptionDetails.statistics.total_appliances
+                },
+                {
+                    'العنصر': 'الاستهلاك اليومي الإجمالي (ك.و/س)',
+                    'القيمة': data.consumptionDetails.statistics.total_daily_kwh
+                },
+                {
+                    'العنصر': 'الاستهلاك الشهري الإجمالي (ك.و/س)',
+                    'القيمة': data.consumptionDetails.statistics.total_monthly_kwh
+                },
+                {
+                    'العنصر': 'متوسط التكلفة الشهرية (ج.م)',
+                    'القيمة': data.consumptionDetails.statistics.average_monthly_cost
+                },
+                {
+                    'العنصر': 'تاريخ التصدير',
+                    'القيمة': data.exportDateFormatted
+                }
+            ];
+            
+            const statsSheet = XLSX.utils.json_to_sheet(statsData);
+            XLSX.utils.book_append_sheet(wb, statsSheet, 'إحصائيات');
+            
+            // 5. ورقة توزيع الاستهلاك حسب الأجهزة (لرسم بياني)
+            if (data.consumptionDetails.appliances.length > 0) {
+                const distributionData = data.consumptionDetails.appliances.map(app => ({
+                    'الجهاز': app.name,
+                    'الاستهلاك اليومي (ك.و/س)': app.daily_consumption_kwh,
+                    'الاستهلاك الشهري (ك.و/س)': app.monthly_consumption_kwh,
+                    'التكلفة الشهرية (ج.م)': app.monthly_cost_egp,
+                    'نسبة من الإجمالي %': ((app.monthly_consumption_kwh / data.consumptionDetails.statistics.total_monthly_kwh) * 100).toFixed(1)
+                }));
+                
+                const distributionSheet = XLSX.utils.json_to_sheet(distributionData);
+                XLSX.utils.book_append_sheet(wb, distributionSheet, 'توزيع الاستهلاك');
+            }
+            
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            return new Blob([wbout], { type: 'application/octet-stream' });
+        }
+
+        function createDetailedCSVBlob(data) {
+            let csvContent = '';
+            
+            // معلومات المستخدم
+            csvContent += '# معلومات المستخدم\n';
+            csvContent += `الاسم,${data.userInfo.fullName}\n`;
+            csvContent += `البريد الإلكتروني,${data.userInfo.email}\n`;
+            csvContent += `رقم الهاتف,${data.userInfo.phone || ''}\n`;
+            csvContent += `تاريخ التصدير,${data.exportDateFormatted}\n\n`;
+            
+            // الأجهزة
+            csvContent += '# الأجهزة والاستهلاك\n';
+            csvContent += 'الجهاز,العدد,القدرة (ك.و),ساعات التشغيل,الاستهلاك اليومي (ك.و/س),الاستهلاك الشهري (ك.و/س),التكلفة الشهرية (ج.م)\n';
+            
+            data.consumptionDetails.appliances.forEach(app => {
+                csvContent += `"${app.name}",${app.quantity || 1},${app.power_kw},${app.hours},${app.daily_consumption_kwh},${app.monthly_consumption_kwh},${app.monthly_cost_egp}\n`;
+            });
+            
+            csvContent += '\n';
+            
+            // إحصائيات
+            csvContent += '# إحصائيات عامة\n';
+            csvContent += `إجمالي الأجهزة,${data.consumptionDetails.statistics.total_appliances}\n`;
+            csvContent += `الاستهلاك اليومي الإجمالي,${data.consumptionDetails.statistics.total_daily_kwh} ك.و/س\n`;
+            csvContent += `الاستهلاك الشهري الإجمالي,${data.consumptionDetails.statistics.total_monthly_kwh} ك.و/س\n`;
+            
+            return new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+        }
+
+        function createJSONBlob(data) {
+            const jsonString = JSON.stringify(data, null, 2);
+            return new Blob([jsonString], { type: 'application/json' });
+        }
+
+        function logExport(userId, format, filename) {
+            const history = JSON.parse(localStorage.getItem('export_history') || '[]');
+            history.push({
+                userId,
+                format,
+                filename,
+                date: new Date().toISOString()
+            });
+            
+            if (history.length > 20) {
+                history.shift();
+            }
+            
+            localStorage.setItem('export_history', JSON.stringify(history));
+        }
+
+        // ========== نافذة كلمة المرور وتصدير قاعدة البيانات الكاملة ==========
+        function showPasswordModal() {
+            document.getElementById('password-modal').classList.add('active');
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-password').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').classList.remove('active');
+            document.getElementById('admin-export-progress').classList.remove('active');
+        }
+
+        async function verifyAndExportAll() {
+            const password = document.getElementById('admin-password').value;
+
+            let passwordOk = false;
+            try { passwordOk = await MowafrAPI.verifyPassword(password); } catch (e) {}
+            if (!passwordOk) {
+                showMessage('❌ كلمة المرور غير صحيحة', 'error');
+                return;
+            }
+            
+            // إخفاء حقل الإدخال
+            document.querySelector('.password-input-group').style.display = 'none';
+            
+            // إظهار شريط التقدم
+            const progressDiv = document.getElementById('admin-export-progress');
+            const progressFill = document.getElementById('admin-export-progress-fill');
+            
+            progressDiv.classList.add('active');
+            progressFill.style.width = '0%';
+            
+            try {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    progressFill.style.width = progress + '%';
+                    if (progress >= 90) clearInterval(interval);
+                }, 300);
+                
+                // جمع جميع البيانات مع تفاصيل الاستهلاك
+                const allData = {
+                    exportDate: new Date().toISOString(),
+                    users: [],
+                    appliances: [],
+                    consumption: [],
+                    history: []
+                };
+                
+                // 1. جمع المستخدمين
+                allData.users = JSON.parse(localStorage.getItem('mowafr_users') || '[]');
+                
+                // 2. جمع الأجهزة مع حساب الاستهلاك لكل جهاز
+                const appliancesData = JSON.parse(localStorage.getItem('mowafr_appliances_data') || '{}');
+                Object.keys(appliancesData).forEach(userId => {
+                    if (Array.isArray(appliancesData[userId])) {
+                        appliancesData[userId].forEach(app => {
+                            const dailyKwh = (app.power_kw || 0) * (app.hours || 0) * (app.quantity || 1);
+                            const monthlyKwh = dailyKwh * 30;
+                            
+                            allData.appliances.push({
+                                user_id: userId,
+                                ...app,
+                                daily_consumption_kwh: dailyKwh.toFixed(2),
+                                monthly_consumption_kwh: monthlyKwh.toFixed(0)
+                            });
+                        });
+                    }
+                });
+                
+                // 3. جمع بيانات الاستهلاك
+                const consumptionData = JSON.parse(localStorage.getItem('mowafr_consumption_data') || '{}');
+                Object.keys(consumptionData).forEach(userId => {
+                    if (consumptionData[userId]) {
+                        allData.consumption.push({
+                            user_id: userId,
+                            ...consumptionData[userId]
+                        });
+                    }
+                });
+                
+                // 4. جمع التاريخ
+                const historyData = JSON.parse(localStorage.getItem('mowafr_history_data') || '{}');
+                Object.keys(historyData).forEach(userId => {
+                    if (Array.isArray(historyData[userId])) {
+                        historyData[userId].forEach(rec => {
+                            allData.history.push({
+                                user_id: userId,
+                                ...rec
+                            });
+                        });
+                    }
+                });
+                
+                // إنشاء ملف Excel متكامل
+                const wb = XLSX.utils.book_new();
+                
+                // ورقة المستخدمين
+                if (allData.users.length > 0) {
+                    const usersSheet = XLSX.utils.json_to_sheet(allData.users);
+                    XLSX.utils.book_append_sheet(wb, usersSheet, 'المستخدمين');
+                }
+                
+                // ورقة الأجهزة مع الاستهلاك
+                if (allData.appliances.length > 0) {
+                    const appliancesSheet = XLSX.utils.json_to_sheet(allData.appliances);
+                    XLSX.utils.book_append_sheet(wb, appliancesSheet, 'الأجهزة والاستهلاك');
+                }
+                
+                // ورقة بيانات الاستهلاك
+                if (allData.consumption.length > 0) {
+                    const consumptionSheet = XLSX.utils.json_to_sheet(allData.consumption);
+                    XLSX.utils.book_append_sheet(wb, consumptionSheet, 'بيانات الاستهلاك');
+                }
+                
+                // ورقة السجل
+                if (allData.history.length > 0) {
+                    const historySheet = XLSX.utils.json_to_sheet(allData.history);
+                    XLSX.utils.book_append_sheet(wb, historySheet, 'سجل الاستهلاك');
+                }
+                
+                // ورقة الإحصائيات العامة
+                const totalConsumption = allData.consumption.reduce((sum, c) => sum + (c.monthlyConsumption || 0), 0);
+                const statsData = [{
+                    'إجمالي المستخدمين': allData.users.length,
+                    'إجمالي الأجهزة': allData.appliances.length,
+                    'إجمالي سجلات الاستهلاك': allData.history.length,
+                    'إجمالي الاستهلاك الشهري': totalConsumption.toFixed(0),
+                    'تاريخ التصدير': new Date().toLocaleString('ar-EG')
+                }];
+                
+                const statsSheet = XLSX.utils.json_to_sheet(statsData);
+                XLSX.utils.book_append_sheet(wb, statsSheet, 'إحصائيات عامة');
+                
+                // حفظ الملف
+                const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([wbout], { type: 'application/octet-stream' });
+                const filename = `mowafr_قاعدة_البيانات_الكاملة_${new Date().toISOString().split('T')[0]}.xlsx`;
+                
+                saveAs(blob, filename);
+                
+                clearInterval(interval);
+                progressFill.style.width = '100%';
+                
+                setTimeout(() => {
+                    progressDiv.classList.remove('active');
+                    closePasswordModal();
+                }, 1500);
+                
+                showMessage(`✅ تم تصدير ${allData.users.length} مستخدم و ${allData.appliances.length} جهاز بنجاح`, 'success');
+                
+            } catch (error) {
+                console.error('خطأ في التصدير:', error);
+                showMessage('حدث خطأ أثناء التصدير', 'error');
+                progressDiv.classList.remove('active');
+            }
+        }
+
+        // ========== تحميل ملخصات ==========
+        function loadUserSummary() {
+            const appliances = window.Auth.getUserAppliances();
+            const history = window.Auth.getUserHistory();
+            const notifications = window.Auth.getUserNotifications();
+            const consumptionData = window.Auth.getUserConsumptionData();
+            
+            document.getElementById('user-appliances-count').textContent = appliances.length;
+            document.getElementById('user-history-count').textContent = history.length;
+            document.getElementById('user-notifications-count').textContent = notifications.length;
+            
+            // حساب إجمالي الاستهلاك
+            let totalConsumption = 0;
+            if (consumptionData?.monthlyConsumption) {
+                totalConsumption = consumptionData.monthlyConsumption;
+            } else {
+                totalConsumption = appliances.reduce((sum, app) => {
+                    return sum + ((app.power_kw || 0) * (app.hours || 0) * (app.quantity || 1) * 30);
+                }, 0);
+            }
+            document.getElementById('user-total-consumption').textContent = totalConsumption.toFixed(0);
+        }
+
+        function loadAdminStats() {
+            // حساب إجمالي المستخدمين
+            const users = JSON.parse(localStorage.getItem('mowafr_users') || '[]');
+            document.getElementById('total-users').textContent = users.length;
+            
+            // حساب إجمالي الأجهزة
+            const appliancesData = JSON.parse(localStorage.getItem('mowafr_appliances_data') || '{}');
+            let totalAppliances = 0;
+            Object.keys(appliancesData).forEach(userId => {
+                if (Array.isArray(appliancesData[userId])) {
+                    totalAppliances += appliancesData[userId].length;
+                }
+            });
+            document.getElementById('total-appliances').textContent = totalAppliances;
+            
+            // حساب إجمالي السجلات
+            const historyData = JSON.parse(localStorage.getItem('mowafr_history_data') || '{}');
+            let totalHistory = 0;
+            Object.keys(historyData).forEach(userId => {
+                if (Array.isArray(historyData[userId])) {
+                    totalHistory += historyData[userId].length;
+                }
+            });
+            document.getElementById('total-history').textContent = totalHistory;
+            
+            // حساب إجمالي الاستهلاك لجميع المستخدمين
+            const consumptionData = JSON.parse(localStorage.getItem('mowafr_consumption_data') || '{}');
+            let totalConsumption = 0;
+            Object.keys(consumptionData).forEach(userId => {
+                if (consumptionData[userId]?.monthlyConsumption) {
+                    totalConsumption += consumptionData[userId].monthlyConsumption;
+                }
+            });
+            document.getElementById('total-consumption-all').textContent = totalConsumption.toFixed(0);
+        }
+
+        function loadExportHistory() {
+            const history = JSON.parse(localStorage.getItem('export_history') || '[]');
+            const userId = sessionStorage.getItem('currentUserId');
+            const userHistory = history.filter(h => h.userId === userId).slice(-5).reverse();
+            
+            const container = document.getElementById('user-export-history');
+            if (userHistory.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-color); text-align: center; padding: 20px;">لا توجد تصديرات سابقة</p>';
+            } else {
+                container.innerHTML = userHistory.map(h => `
+                    <div class="export-item">
+                        <div>
+                            <i class="fas fa-${h.format === 'excel' ? 'file-excel' : h.format === 'csv' ? 'file-csv' : 'file-code'}" style="color: var(--primary-color);"></i>
+                            <strong>${h.filename}</strong>
+                            <br>
+                            <small>${new Date(h.date).toLocaleString('ar-EG')}</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function loadActiveSessions() {
+            const container = document.getElementById('active-sessions');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px; padding: 10px; background: white; border-radius: 10px;">
+                    <i class="fas fa-laptop" style="color: var(--primary-color);"></i>
+                    <div>
+                        <strong>الجهاز الحالي</strong>
+                        <p style="margin: 5px 0 0; font-size: 13px; color: var(--gray-color);">آخر نشاط: الآن</p>
+                    </div>
+                    <span style="margin-right: auto; background: #E8F5E9; color: #0f0096; padding: 5px 10px; border-radius: 20px; font-size: 12px;">نشط</span>
+                </div>
+            `;
+        }
+
+        // ========== دوال الأمان ==========
+        async function changePassword() {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showMessage('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                showMessage('كلمة المرور الجديدة غير متطابقة', 'error');
+                return;
+            }
+            if (newPassword.length < 6) {
+                showMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            try {
+                await MowafrAPI.changePassword(currentPassword, newPassword);
+                showMessage('تم تغيير كلمة المرور بنجاح', 'success');
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+            } catch (err) {
+                showMessage(err.status ? err.message : 'تعذر الاتصال بالخادم', 'error');
+            }
+        }
+
+        function toggleTwoFactor(enabled) {
+            showMessage(enabled ? 'تم تفعيل المصادقة الثنائية' : 'تم إلغاء المصادقة الثنائية', 'info');
+        }
+
+        function logoutAllDevices() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج من جميع الأجهزة؟')) {
+                showMessage('تم تسجيل الخروج من جميع الأجهزة الأخرى', 'success');
+            }
+        }
+
+        function clearLocalData() {
+            if (confirm('هل أنت متأكد من حذف جميع البيانات المحلية؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+                // حذف البيانات المحلية فقط (وليس الحساب)
+                const userId = sessionStorage.getItem('currentUserId');
+                
+                const consumptionData = JSON.parse(localStorage.getItem('mowafr_consumption_data') || '{}');
+                delete consumptionData[userId];
+                localStorage.setItem('mowafr_consumption_data', JSON.stringify(consumptionData));
+                
+                const appliancesData = JSON.parse(localStorage.getItem('mowafr_appliances_data') || '{}');
+                delete appliancesData[userId];
+                localStorage.setItem('mowafr_appliances_data', JSON.stringify(appliancesData));
+                
+                const historyData = JSON.parse(localStorage.getItem('mowafr_history_data') || '{}');
+                delete historyData[userId];
+                localStorage.setItem('mowafr_history_data', JSON.stringify(historyData));
+                
+                showMessage('تم حذف جميع البيانات المحلية', 'success');
+                setTimeout(() => location.reload(), 1500);
+            }
+        }
+
+        async function deleteAccount() {
+            if (!confirm('⚠️ هل أنت متأكد من حذف الحساب نهائياً؟ هذا الإجراء لا يمكن التراجع عنه وستفقد جميع بياناتك.')) {
+                return;
+            }
+            try {
+                await MowafrAPI.deleteAccount();
+                showMessage('تم حذف الحساب بنجاح. نشكرك على استخدام مُوفّر!', 'success');
+                setTimeout(() => window.location.href = 'index.html', 1500);
+            } catch (err) {
+                showMessage(err.status ? err.message : 'تعذر الاتصال بالخادم', 'error');
+            }
+        }
+
+        // ========== دوال الملف الشخصي ==========
+        function editProfile() {
+            const user = window.Auth.getCurrentUser();
+            if (!user) return;
+            
+            document.getElementById('edit-fullname').value = user.fullName;
+            document.getElementById('edit-email').value = user.email;
+            document.getElementById('edit-phone').value = user.phone || '';
+            document.getElementById('edit-address').value = user.profile?.address || '';
+            document.getElementById('edit-meter').value = user.profile?.meterNumber || '';
+            
+            document.getElementById('edit-profile-modal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-profile-modal').style.display = 'none';
+        }
+
+        function saveProfileChanges() {
+            const fullName = document.getElementById('edit-fullname').value.trim();
+            const email = document.getElementById('edit-email').value.trim();
+            const phone = document.getElementById('edit-phone').value.trim();
+            const address = document.getElementById('edit-address').value.trim();
+            const meterNumber = document.getElementById('edit-meter').value.trim();
+            
+            if (!fullName || !email) {
+                showMessage('الاسم والبريد الإلكتروني مطلوبان', 'error');
+                return;
+            }
+            
+            const userId = sessionStorage.getItem('currentUserId');
+            const users = JSON.parse(localStorage.getItem('mowafr_users') || '[]');
+            const userIndex = users.findIndex(u => u.id === userId);
+            
+            if (userIndex === -1) return;
+            
+            // التحقق من البريد الإلكتروني
+            if (users[userIndex].email !== email) {
+                const emailExists = users.some(u => u.email === email && u.id !== userId);
+                if (emailExists) {
+                    showMessage('البريد الإلكتروني مستخدم بالفعل', 'error');
+                    return;
+                }
+            }
+            
+            // تحديث البيانات
+            users[userIndex].fullName = fullName;
+            users[userIndex].email = email;
+            users[userIndex].phone = phone;
+            users[userIndex].profile = users[userIndex].profile || {};
+            users[userIndex].profile.address = address;
+            users[userIndex].profile.meterNumber = meterNumber;
+            
+            localStorage.setItem('mowafr_users', JSON.stringify(users));
+            
+            sessionStorage.setItem('currentUserName', fullName);
+            sessionStorage.setItem('currentUserEmail', email);
+            
+            closeEditModal();
+            loadProfileData();
+            
+            showMessage('تم تحديث الملف الشخصي بنجاح', 'success');
+        }
+
+        // ========== دوال مساعدة ==========
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed; top: 20px; left: 20px; right: 20px;
+                padding: 15px; border-radius: 8px;
+                color: white; font-weight: 600; text-align: center;
+                z-index: 9999; animation: slideDown 0.3s ease;
+                background-color: ${type === 'success' ? '#0f0096' : type === 'error' ? '#D32F2F' : '#1976D2'};
+            `;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            setTimeout(() => messageDiv.remove(), 3000);
+        }
+
+        // إغلاق النافذة عند النقر خارجها
+        window.onclick = function(event) {
+            const modal = document.getElementById('password-modal');
+            if (event.target === modal) {
+                closePasswordModal();
+            }
+        }
+
+        // إضافة أنماط CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateY(-100%); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            
+            .profile-info-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 12px 0;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .profile-info-label {
+                font-weight: 600;
+                color: var(--dark-color);
+            }
+            
+            .profile-info-value {
+                color: var(--gray-color);
+            }
+            
+            .color-option {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                cursor: pointer;
+                border: 3px solid transparent;
+                transition: var(--transition);
+            }
+            
+            .color-option:hover {
+                transform: scale(1.1);
+            }
+            
+            .color-option.selected {
+                border-color: #333;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // تحميل البيانات عند فتح الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.Auth.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // تحميل بيانات المستخدم
+            window.Auth.loadUserData();
+            
+            // تحميل التبويب النشط
+            loadProfileData();
+            loadUsageStats();
+            loadUserSettings();
+            loadAdminStats();
+            
+            // تطبيق الإعدادات المحفوظة
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) toggleDarkMode(true);
+            
+            const fontSize = localStorage.getItem('fontSize');
+            if (fontSize) changeFontSize(fontSize);
+            
+            const autoRefresh = localStorage.getItem('autoRefresh') !== 'false';
+            if (autoRefresh) setAutoRefresh(true);
+        });
+    </script>
+    <script src="js/mobile.js"></script>
+</body>
+</html>

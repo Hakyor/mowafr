@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0096">
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <title>دليل المساعدة - مُوفّر</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* تنسيقات إضافية لصفحة المساعدة */
+        .help-page {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+            min-height: 100vh;
+        }
+        
+        .help-header {
+            background: linear-gradient(135deg, var(--primary-color), #1B5E20);
+            color: white;
+            padding: 60px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .help-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,170.7C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: bottom;
+            background-size: cover;
+            opacity: 0.3;
+        }
+        
+        .help-header-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .help-header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .help-header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+        
+        .help-search {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .help-search input {
+            width: 100%;
+            padding: 20px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-family: 'Cairo', sans-serif;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .help-search i {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+        
+        .help-quick-nav {
+            background: white;
+            border-radius: 30px;
+            padding: 20px;
+            margin-top: -40px;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        
+        .quick-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .quick-nav-item {
+            text-align: center;
+            padding: 20px 15px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--dark-color);
+        }
+        
+        .quick-nav-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-5px);
+        }
+        
+        .quick-nav-item i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .quick-nav-item:hover i {
+            color: white;
+        }
+        
+        .help-section {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #e0e0e0;
+        }
+        
+        .section-title i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+        
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--dark-color);
+            margin: 0;
+        }
+        
+        .meter-detailed-showcase {
+            position: relative;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+        
+        .meter-image-wrapper {
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border: 5px solid white;
+        }
+        
+        .meter-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #f0f0f0;
+        }
+        
+        .meter-hotspot-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .meter-part-card {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            border-right: 5px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .meter-part-card:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 10px 20px rgba(46,125,50,0.1);
+        }
+        
+        .meter-part-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .meter-part-card h4 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .appliances-category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .category-card {
+            background: #f8f9fa;
+            border-radius: 25px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(46,125,50,0.1);
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(46,125,50,0.1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .category-icon i {
+            font-size: 30px;
+            color: var(--primary-color);
+        }
+        
+        .appliance-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .appliance-list li {
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .appliance-power {
+            background: #E8F5E9;
+            color: var(--primary-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .calculation-guide {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+            padding: 30px;
+            border-radius: 25px;
+        }
+        
+        .formula-box {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 1.3rem;
+            margin: 20px 0;
+            border: 2px dashed var(--primary-color);
+        }
+        
+        .example-box {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .faq-item {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-item:hover {
+            background: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        
+        .faq-item h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .video-guide {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 20px;
+            margin: 30px 0;
+        }
+        
+        .video-guide iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .quick-tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .tip-card {
+            background: #fff3cd;
+            padding: 25px;
+            border-radius: 20px;
+            border-right: 5px solid #ffc107;
+        }
+        
+        .tip-card i {
+            font-size: 2rem;
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+        
+        .back-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-5px);
+        }
+        
+        @media (max-width: 768px) {
+            .help-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .help-section {
+                padding: 25px;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="help-page">
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>مُوفّر</span>
+            </a>
+            
+            <div class="nav-links">
+                    <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                    <a href="data-entry.html"><i class="fas fa-edit"></i> إدخال البيانات</a>
+                    <a href="history.html"><i class="fas fa-history"></i> السجل</a>
+                    <a href="help-guide.html" class="active"><i class="fa fa-question-circle"></i> دليل المساعدة</a>
+                    <a href="profile.html"><i class="fas fa-user-circle"></i> حسابك</a>
+                    <a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> خروج</a>
+            </div>
+            
+            <div class="user-info" style="display: flex; align-items: center; gap: 15px;">
+                <div class="user-avatar" id="user-avatar">?</div>
+                <div>
+                    <p style="font-weight: 600;" id="user-name">مرحباً</p>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- رأس صفحة المساعدة -->
+    <header class="help-header">
+        <div class="container">
+            <div class="help-header-content">
+                <h1>
+                    <i class="fas fa-graduation-cap"></i>
+                    دليل المساعدة
+                </h1>
+                <p>كل ما تحتاج معرفته عن عداد الكهرباء والأجهزة المنزلية وطرق التوفير</p>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding: 40px 0;">
+        <div class="container">
+            <!-- روابط سريعة -->
+            <div class="help-quick-nav">
+                <div class="quick-nav-grid">
+                    <a href="#meter-guide" class="quick-nav-item">
+                        <i class="fas fa-microchip"></i>
+                        <h4>شرح العداد</h4>
+                        <small>مكونات وطريقة الشحن</small>
+                    </a>
+                    <a href="#appliances-guide" class="quick-nav-item">
+                        <i class="fas fa-plug"></i>
+                        <h4>الأجهزة الكهربائية</h4>
+                        <small>معدلات الاستهلاك</small>
+                    </a>
+                    <a href="#calculation-guide" class="quick-nav-item">
+                        <i class="fas fa-calculator"></i>
+                        <h4>طريقة الحساب</h4>
+                        <small>كيف تحسب استهلاكك</small>
+                    </a>
+                    <a href="#saving-tips" class="quick-nav-item">
+                        <i class="fas fa-leaf"></i>
+                        <h4>نصائح التوفير</h4>
+                        <small>خطط لخفض الفاتورة</small>
+                    </a>
+                    <a href="#faq" class="quick-nav-item">
+                        <i class="fas fa-question"></i>
+                        <h4>أسئلة شائعة</h4>
+                        <small>استفسارات مهمة</small>
+                    </a>
+                </div>
+            </div>
+
+            <!-- قسم شرح العداد بالتفصيل -->
+            <section id="meter-guide" class="help-section">
+                <div class="section-title">
+                    <i class="fas fa-microchip"></i>
+                    <h2>شرح عداد الكهرباء مسبوق الدفع</h2>
+                </div>
+                
+                <div class="meter-detailed-showcase">
+                    <div class="meter-image-wrapper">
+                        <!-- صورة العداد - يرجى وضع الصورة في المسار الصحيح -->
+                        <img src="assets/electricmeter.jpg" alt="عداد الكهرباء" class="meter-image" onerror="this.src='https://via.placeholder.com/500x400?text=صورة+العداد'">
+                    </div>
+                </div>
+                
+                <h3 style="margin: 30px 0 20px; color: var(--primary-color);">
+                    <i class="fas fa-info-circle"></i>
+                    مكونات العداد بالتفصيل
+                </h3>
+                
+                <div class="meter-hotspot-list">
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">1</span>
+                        <h4>لية الفتاح الداخلي</h4>
+                        <p>تستخدم لتشغيل وفصل التيار الكهربائي داخل الشقة أو المنزل. عند فصلها، ينقطع التيار عن جميع الأجهزة.</p>
+                    </div>
+                    
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">2</span>
+                        <h4>لية انذار</h4>
+                        <p>تصدر صوتاً عند اقتراب نفاد الرصيد (أقل من 50 جنيه) أو عند وجود عطل في التوصيلات أو زيادة في الأحمال.</p>
+                    </div>
+                    
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">3</span>
+                        <h4>لية التحفة قليلة</h4>
+                        <p>تستخدم لإعادة ضبط العداد بعد أعمال الصيانة أو عند فصل التيار الكهربائي لفترة طويلة.</p>
+                    </div>
+                    
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">4</span>
+                        <h4>غطاء فتحة الكارت</h4>
+                        <p>غطاء بلاستيكي لحماية فتحة إدخال الكارت من الأتربة والرطوبة والعوامل الجوية.</p>
+                    </div>
+                    
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">5</span>
+                        <h4>ثالثة المداد</h4>
+                        <p>الجزء الخاص بتوصيل الأسلاك الكهربائية الداخلة من مصدر الكهرباء والخارجة إلى المنزل.</p>
+                    </div>
+                    
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">6</span>
+                        <h4>فتحة ادخال الكارت</h4>
+                        <p>يتم إدخال كارت الشحن هنا مع اتجاه السهم لأعلى حتى تظهر رسالة تأكيد الشحن على الشاشة.</p>
+                    </div>
+                    
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">7</span>
+                        <h4>زر تقليل الرماط على الثابتة</h4>
+                        <p>للتحكم في القاطع الزائد وحماية الأجهزة من ارتفاع التيار. يستخدمه الفني في حالات الطوارئ.</p>
+                    </div>
+                    
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">8</span>
+                        <h4>الوصلة الغيرية</h4>
+                        <p>تستخدم من قبل فني الكهرباء للقراءات والبرمجة وضبط العداد. لا يعبث بها المستخدم.</p>
+                    </div>
+                    
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">9</span>
+                        <h4>البطارية</h4>
+                        <p>تحافظ على الوقت والبيانات المخزنة عند انقطاع التيار الكهربائي. تدوم لسنوات طويلة.</p>
+                    </div>
+                    
+                    <div class="meter-part-card">
+                        <span class="meter-part-number">10</span>
+                        <h4>رزيمة ترميالت العفاد</h4>
+                        <p>مكان توصيل التأريض (الأرضي) لحماية العداد من الصواعق والتفريغ الكهربائي.</p>
+                    </div>
+                </div>
+                
+                <!-- شرح الشحن -->
+                <div style="margin-top: 40px;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 20px;">
+                        <i class="fas fa-bolt"></i>
+                        طريقة شحن العداد (خطوات مصورة)
+                    </h3>
+                    
+                    <div class="recharge-steps">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-text">
+                                <strong>اشتر كارت شحن</strong>
+                                <p>من أي منفذ بيع (أكشاك، فوري، مكاتب البريد، أو موقع شركة الكهرباء الإلكتروني)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-text">
+                                <strong>جهز الكارت</strong>
+                                <p>تأكد من نظافة الكارت وأن الشريحة الذهبية سليمة وغير متآكلة أو مخدوشة.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-text">
+                                <strong>افتح الغطاء (رقم 4)</strong>
+                                <p>افتح الغطاء البلاستيكي الذي يحمي فتحة الكارت برفق.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-text">
+                                <strong>أدخل الكارت</strong>
+                                <p>أدخل الكارت في الفتحة (رقم 6) مع اتجاه السهم للداخل (السهم متجه لأعلى العادة).</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">5</div>
+                            <div class="step-text">
+                                <strong>انتظر التأكيد</strong>
+                                <p>ستظهر على الشاشة رسالة "SUCC" أو "ناجح" وتسمع صوت تنبيه من لية الانذار (رقم 2).</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">6</div>
+                            <div class="step-text">
+                                <strong>ازيل الكارت</strong>
+                                <p>بعد التأكد من نجاح عملية الشحن، اسحب الكارت برفق وأغلق الغطاء.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-number">7</div>
+                            <div class="step-text">
+                                <strong>تحقق من الرصيد</strong>
+                                <p>شاشة العداد الرئيسية ستعرض الرصيد الجديد مضافاً إلى الرصيد القديم.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fff3cd; padding: 20px; border-radius: 15px; margin-top: 20px;">
+                        <p style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-exclamation-triangle" style="color: #F57C00;"></i>
+                            <strong>ملاحظة مهمة:</strong> إذا لم تظهر رسالة النجاح، كرر المحاولة مع التأكد من نظافة الكارت. إذا استمرت المشكلة، قد يكون الكارت تالفاً أو العداد يحتاج صيانة.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم الأجهزة الكهربائية -->
+            <section id="appliances-guide" class="help-section">
+                <div class="section-title">
+                    <i class="fas fa-plug"></i>
+                    <h2>دليل استهلاك الأجهزة الكهربائية</h2>
+                </div>
+                
+                <div class="appliances-category-grid">
+                    <!-- أجهزة التبريد -->
+                    <div class="category-card">
+                        <div class="category-header">
+                            <div class="category-icon">
+                                <i class="fas fa-snowflake"></i>
+                            </div>
+                            <h3>أجهزة التبريد والتكييف</h3>
+                        </div>
+                        
+                        <ul class="appliance-list">
+                            <li>
+                                <span>تكييف 1.5 حصان</span>
+                                <span class="appliance-power">1.5 - 2.2 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>تكييف 2.25 حصان</span>
+                                <span class="appliance-power">2.2 - 3.0 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>ثلاجة 14-16 قدم</span>
+                                <span class="appliance-power">0.15 - 0.25 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>فريزر رأسي</span>
+                                <span class="appliance-power">0.2 - 0.3 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>مروحة سقف</span>
+                                <span class="appliance-power">0.07 - 0.1 ك.و/س</span>
+                            </li>
+                        </ul>
+                        
+                        <div style="margin-top: 15px; font-size: 14px; color: var(--gray-color);">
+                            <i class="fas fa-lightbulb"></i> ضبط التكييف على 24° يوفر 30% من الاستهلاك
+                        </div>
+                    </div>
+                    
+                    <!-- أجهزة المطبخ -->
+                    <div class="category-card">
+                        <div class="category-header">
+                            <div class="category-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <h3>أجهزة المطبخ</h3>
+                        </div>
+                        
+                        <ul class="appliance-list">
+                            <li>
+                                <span>سخان مياه</span>
+                                <span class="appliance-power">1.5 - 2.5 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>غسالة أتوماتيك</span>
+                                <span class="appliance-power">0.5 - 1.0 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>ميكروويف</span>
+                                <span class="appliance-power">0.8 - 1.2 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>غلاية كهربائية</span>
+                                <span class="appliance-power">1.8 - 2.2 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>خلاط / كبة</span>
+                                <span class="appliance-power">0.3 - 0.5 ك.و/س</span>
+                            </li>
+                        </ul>
+                        
+                        <div style="margin-top: 15px; font-size: 14px; color: var(--gray-color);">
+                            <i class="fas fa-lightbulb"></i> السخان الأكثر استهلاكاً، شغله قبل الاستخدام بنصف ساعة فقط
+                        </div>
+                    </div>
+                    
+                    <!-- الترفيه والإضاءة -->
+                    <div class="category-card">
+                        <div class="category-header">
+                            <div class="category-icon">
+                                <i class="fas fa-tv"></i>
+                            </div>
+                            <h3>الترفيه والإضاءة</h3>
+                        </div>
+                        
+                        <ul class="appliance-list">
+                            <li>
+                                <span>تلفزيون LED 50"</span>
+                                <span class="appliance-power">0.1 - 0.15 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>رسيفر</span>
+                                <span class="appliance-power">0.02 - 0.05 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>لمبة LED</span>
+                                <span class="appliance-power">0.008 - 0.015 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>لمبة موفرة (فلورسنت)</span>
+                                <span class="appliance-power">0.015 - 0.025 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>راوتر الإنترنت</span>
+                                <span class="appliance-power">0.01 - 0.02 ك.و/س</span>
+                            </li>
+                        </ul>
+                        
+                        <div style="margin-top: 15px; font-size: 14px; color: var(--gray-color);">
+                            <i class="fas fa-lightbulb"></i> استبدل كل اللمبات بـ LED لتوفير 80% من إضاءتك
+                        </div>
+                    </div>
+                    
+                    <!-- أجهزة أخرى -->
+                    <div class="category-card">
+                        <div class="category-header">
+                            <div class="category-icon">
+                                <i class="fas fa-laptop"></i>
+                            </div>
+                            <h3>أجهزة متنوعة</h3>
+                        </div>
+                        
+                        <ul class="appliance-list">
+                            <li>
+                                <span>كمبيوتر مكتبي</span>
+                                <span class="appliance-power">0.15 - 0.3 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>لاب توب</span>
+                                <span class="appliance-power">0.05 - 0.1 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>مكواة بخار</span>
+                                <span class="appliance-power">1.0 - 1.5 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>مكنسة كهربائية</span>
+                                <span class="appliance-power">1.2 - 1.8 ك.و/س</span>
+                            </li>
+                            <li>
+                                <span>شاحن موبايل</span>
+                                <span class="appliance-power">0.005 - 0.01 ك.و/س</span>
+                            </li>
+                        </ul>
+                        
+                        <div style="margin-top: 15px; font-size: 14px; color: var(--gray-color);">
+                            <i class="fas fa-lightbulb"></i> افصل الشواحن من الفيشة لأنها تستهلك حتى لو مش شغالة
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم طريقة الحساب -->
+            <section id="calculation-guide" class="help-section">
+                <div class="section-title">
+                    <i class="fas fa-calculator"></i>
+                    <h2>كيف تحسب استهلاك الكهرباء بنفسك</h2>
+                </div>
+                
+                <div class="calculation-guide">
+                    <div class="formula-box">
+                        <p style="font-size: 1.5rem; margin-bottom: 10px;">المعادلة السحرية</p>
+                        <p style="font-size: 2rem; font-weight: 700; color: var(--primary-color);">
+                            الاستهلاك = القدرة × عدد الساعات
+                        </p>
+                        <p style="margin-top: 10px;">(بالكيلوواط/ساعة)</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4 style="color: white; margin-bottom: 15px;">📝 مثال تطبيقي</h4>
+                        <p>🔹 جهاز: تكييف قدرته 2 كيلوواط</p>
+                        <p>🔹 مدة التشغيل: 6 ساعات يومياً</p>
+                        <p>🔹 الاستهلاك اليومي = 2 × 6 = <strong>12 ك.و/س</strong></p>
+                        <p>🔹 الاستهلاك الشهري = 12 × 30 = <strong>360 ك.و/شهر</strong></p>
+                        <p>🔹 التكلفة التقريبية = 360 × 1.95 ≈ <strong>702 جنيه</strong> (في الشريحة الخامسة)</p>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 15px;">💡 نصائح عند الحساب</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--primary-color);"></i> اقرأ قدرة الجهاز من الملصق الخلفي (بالواط W) وحولها للكيلوواط (اقسم على 1000).</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--primary-color);"></i> إذا كان الجهاز يعمل بشكل متقطع (مثل الثلاجة)، قدر متوسط ساعات التشغيل الفعلية.</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--primary-color);"></i> لا تنس الأجهزة الصغيرة: شواحن، ريموتات، أجهزة في وضع الاستعداد (Standby).</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: var(--primary-color);"></i> استخدم تطبيق "مُوفّر" لإدخال أجهزتك والحصول على حساب دقيق حسب الشرائح.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم نصائح التوفير -->
+            <section id="saving-tips" class="help-section">
+                <div class="section-title">
+                    <i class="fas fa-leaf"></i>
+                    <h2>خطط ونصائح لتوفير الكهرباء</h2>
+                </div>
+                
+                <div class="quick-tips">
+                    <div class="tip-card">
+                        <i class="fas fa-temperature-high"></i>
+                        <h4>التكييف</h4>
+                        <p>اضبطه على 24° بدل 18° لتوفير 30% من استهلاكه. نظف الفلاتر كل شهر.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <i class="fas fa-shower"></i>
+                        <h4>السخان</h4>
+                        <p>شغله قبل الاستخدام بنصف ساعة فقط، وافصله بعدها. العازل الحراري يقلل الفقد.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <h4>الإضاءة</h4>
+                        <p>استبدل كل اللمبات بـ LED، واعتمد على الإضاءة الطبيعية في النهار.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <i class="fas fa-plug"></i>
+                        <h4>الأجهزة الإلكترونية</h4>
+                        <p>افصل الأجهزة من الفيشة (الريسيفر، الشواحن، الراوتر) عند عدم الاستخدام.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>أوقات الذروة</h4>
+                        <p>شغل الأجهزة عالية الاستهلاك بعد الساعة 11 مساءً (خاصة الغسالة والمكواة).</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <i class="fas fa-snowflake"></i>
+                        <h4>الثلاجة</h4>
+                        <p>لا تفتحها كثيراً، وتأكد من إحكام الغلق. نظف الملف الخلفي من الأتربة.</p>
+                    </div>
+                </div>
+                
+                <!-- خطة توفير متدرجة -->
+                <div style="background: white; padding: 30px; border-radius: 20px; margin-top: 30px;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 20px;">📋 خطة توفير 30 يوم</h3>
+                    
+                    <div style="display: grid; gap: 15px;">
+                        <div style="padding: 15px; background: #E8F5E9; border-radius: 15px;">
+                            <strong style="color: var(--primary-color);">الأسبوع الأول (تغييرات بسيطة):</strong>
+                            <p>• إطفاء اللمبات في الغرف الفارغة • فصل الشواحن • ضبط التكييف على 24°</p>
+                        </div>
+                        
+                        <div style="padding: 15px; background: #FFF3CD; border-radius: 15px;">
+                            <strong style="color: #F57C00;">الأسبوع الثاني (تحسين العادات):</strong>
+                            <p>• تشغيل الغسالة بعد 11م • تقليل استخدام السخان • غسيل الملابس بالماء البارد</p>
+                        </div>
+                        
+                        <div style="padding: 15px; background: #E3F2FD; border-radius: 15px;">
+                            <strong style="color: #1976D2;">الأسبوع الثالث (صيانة):</strong>
+                            <p>• تنظيف فلاتر التكييف • تنظيف خلف الثلاجة • التحقق من إحكام الأبواب</p>
+                        </div>
+                        
+                        <div style="padding: 15px; background: #F3E5F5; border-radius: 15px;">
+                            <strong style="color: #7B1FA2;">الأسبوع الرابع (استثمار):</strong>
+                            <p>• شراء لمبات LED • مؤقت زمني للسخان • جهاز توفير الطاقة (اختياري)</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 20px; background: #0f0096; color: white; border-radius: 15px;">
+                        <p style="font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-trophy"></i>
+                            بتطبيق هذه الخطة، يمكنك توفير 20-40% من فاتورتك الشهرية!
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- الأسئلة الشائعة -->
+            <section id="faq" class="help-section">
+                <div class="section-title">
+                    <i class="fas fa-question-circle"></i>
+                    <h2>الأسئلة الشائعة</h2>
+                </div>
+                
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h4><i class="fas fa-question"></i> ما الفرق بين الكيلوواط والكيلوواط/ساعة؟</h4>
+                        <p>الكيلوواط (kW) هو وحدة قياس قدرة الجهاز، أما الكيلوواط/ساعة (kWh) فهو كمية الطاقة المستهلكة عند تشغيل الجهاز بقدرة 1 كيلوواط لمدة ساعة.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h4><i class="fas fa-question"></i> كيف أعرف أن كارت الشحن تالف؟</h4>
+                        <p>إذا لم تظهر رسالة النجاح بعد عدة محاولات، وجربت كارتاً آخر وعمل، فكارتك الأول تالف. يمكنك استبداله في شركة الكهرباء.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h4><i class="fas fa-question"></i> ماذا يعني الرصيد 0 والكهرباء شغالة؟</h4>
+                        <p>العداد يعطي مهلة أمان (عادة 5-10 جنيه) كرصيد طوارئ. يجب الشحن فوراً لأن الرصيد سينقطع بعد انتهاء المهلة.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h4><i class="fas fa-question"></i> كيف أتجنب الوصول للشريحة السابعة؟</h4>
+                        <p>راقب استهلاكك من تطبيق مُوفّر، وإذا اقتربت من 950 ك.و، قلل من استخدام الأجهزة عالية الاستهلاك حتى نهاية الشهر.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h4><i class="fas fa-question"></i> هل الأجهزة في وضع الاستعداد تستهلك؟</h4>
+                        <p>نعم! الريسيفر، التلفزيون، الشواحن تستهلك 5-15 واط حتى وهي مغلقة. افصلها من الفيشة تماماً.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h4><i class="fas fa-question"></i> ما هي أوقات الذروة؟</h4>
+                        <p>عادة من 5 مساءً إلى 11 مساءً (فصل الصيف) حيث يزيد الحمل على الشبكة. يفضل تشغيل الأجهزة عالية الاستهلاك خارج هذه الأوقات.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- زر العودة للأعلى -->
+    <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- الفوتر -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-bolt"></i> مُوفّر</h3>
+                    <p>منصة مصرية لمساعدة المواطنين على إدارة استهلاك الكهرباء وتوفير شحن العدادات مسبقة الدفع</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="dashboard.html">لوحة التحكم</a></li>
+                        <li><a href="data-entry.html">إدخال البيانات</a></li>
+                        <li><a href="help-guide.html">المساعدة</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>اتصل بنا</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> hakyorelekiaby@gmail.com</li>
+                        <li><i class="fas fa-phone"></i> +201017753052</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2026 مُوفّر - جميع الحقوق محفوظة | تم التحديث وفق أسعار شرائح الكهرباء 2026</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/auth.js?v=2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحميل بيانات المستخدم
+            if (window.Auth && window.Auth.isLoggedIn()) {
+                window.Auth.loadUserData();
+            }
+            
+            // تفعيل البحث
+            const searchInput = document.querySelector('.help-search input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    // يمكن إضافة منطق البحث هنا إذا أردت
+                });
+            }
+            
+            // إضافة تأثيرات حركية للعناصر عند الظهور
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.category-card, .meter-part-card, .faq-item, .tip-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+    <script src="js/mobile.js"></script>
+</body>
+</html>
