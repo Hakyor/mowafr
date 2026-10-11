@@ -1,314 +1,445 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#0f0096">
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
-    <title>مُوفّر - توفير شحن عداد الكهرباء المصري</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/mobile.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="حاسبة ذكية لشرائح الكهرباء المصرية 2026 تساعدك على تتبع استهلاكك وتوفير شحن العداد.">
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<title>مُوفّر - توفير شحن عداد الكهرباء المصري</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --ink:#333; --brand:#2a48cc; --brand-2:#1b325e; --accent:#2a48cc; --accent-ink:#fff;
+  --bg:#f8f9fa; --card:#fff; --text:#333; --muted:#6c757d; --line:#e6e8ee;
+  --ok:#2e7d32; --warn:#856404; --danger:#dc3545;
+  --r:12px; --shadow:0 4px 14px rgba(0,0,0,.09);
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:76px}
+body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+a{color:inherit;text-decoration:none}
+button,input{font-family:inherit}
+img,svg{max-width:100%;display:block}
+.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 18px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:50;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.08);padding-top:var(--safe-t);color:var(--text)}
+.top .wrap{display:flex;align-items:center;gap:10px;height:62px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.4rem;margin-inline-end:auto;color:var(--brand)}
+.logo i{color:var(--brand);font-size:1.25rem}
+.top-actions{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;font-weight:700;font-size:1rem;border-radius:14px;padding:0 20px;min-height:48px;transition:transform .12s,box-shadow .2s,background .2s}
+.btn:active{transform:scale(.97)}
+.btn-accent{background:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(42,72,204,.28)}
+.btn-accent:hover{background:#2340b8}
+.btn-ghost{background:#fff;color:var(--brand);border:2px solid var(--brand)}
+.btn-ghost:hover{background:rgba(42,72,204,.07)}
+.btn-brand{background:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(42,72,204,.28)}
+.btn-brand:hover{background:#2340b8}
+.btn-sm{min-height:40px;padding:0 16px;font-size:.92rem;border-radius:12px}
+.btn-block{width:100%}
+.burger{display:none;width:44px;height:44px;border-radius:12px;border:0;background:#f1f3fb;color:var(--brand);font-size:1.2rem;cursor:pointer}
+.menu{display:flex;gap:4px;align-items:center}
+.menu a{color:var(--text);font-weight:600;padding:8px 14px;border-radius:10px;font-size:.95rem}
+.menu a:hover{background:rgba(42,72,204,.08);color:var(--brand)}
+
+/* ---------- hero ---------- */
+.hero{background:linear-gradient(135deg,#E8F5E9 0%,#C8E6C9 100%);color:var(--text);padding:34px 0 96px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset-inline-start:-80px;bottom:-80px;width:260px;height:260px;border-radius:50%;background:rgba(42,72,204,.07)}
+.hero .wrap{display:grid;gap:28px;position:relative;z-index:1}
+.pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.75);border:1px solid rgba(42,72,204,.18);padding:6px 14px;border-radius:999px;font-size:.85rem;font-weight:600;color:var(--brand);width:fit-content}
+.pill i{color:var(--brand)}
+.hero h1{font-size:2.05rem;line-height:1.35;font-weight:800;margin:14px 0 12px}
+.hero h1 em{font-style:normal;color:var(--brand);background:rgba(42,72,204,.1);padding:0 10px;border-radius:6px;white-space:nowrap}
+.hero p.lead{color:#4a5560;font-size:1.05rem;max-width:520px}
+.cta{display:grid;gap:12px;margin-top:24px}
+.chips{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:20px;color:#4a5560;font-size:.88rem}
+.chips span{display:flex;align-items:center;gap:6px}
+.chips i{color:#2e7d32}
+
+.mock{background:#fff;border-radius:16px;padding:18px;box-shadow:var(--shadow);max-width:360px;border-right:5px solid var(--brand)}
+.mock-h{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;color:var(--muted);margin-bottom:10px}
+.mock-h b{background:rgba(42,72,204,.1);color:var(--brand);padding:2px 10px;border-radius:999px;font-weight:700}
+.mock-big{font-size:2.3rem;font-weight:800;line-height:1.1;color:var(--brand)}
+.mock-big small{font-size:1rem;font-weight:600;color:var(--muted);margin-inline-start:6px}
+.bar{height:10px;background:#e9ecf5;border-radius:99px;overflow:hidden;margin:14px 0 8px}
+.bar i{display:block;height:100%;width:64%;background:linear-gradient(90deg,#2a48cc,#4caf50);border-radius:99px}
+.mock-f{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted)}
+
+/* ---------- calculator ---------- */
+.calc{margin-top:-64px;position:relative;z-index:5}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--line)}
+.calc .card{padding:22px 18px}
+.sec-title{display:flex;align-items:center;gap:10px;font-size:1.3rem;font-weight:800;color:var(--ink)}
+.sec-title i{color:var(--brand)}
+.sec-sub{color:var(--muted);font-size:.93rem;margin:4px 0 18px}
+.fields{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.field,.left,.right,.hero .wrap>*{min-width:0}
+.field label{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.93rem;margin-bottom:6px;color:var(--ink)}
+.field label i{color:var(--brand)}
+.input{display:flex;align-items:center;background:#f8f9fa;border:2px solid var(--line);border-radius:14px;transition:border .15s,background .15s}
+.input:focus-within{border-color:var(--brand);background:#fff}
+.input input{flex:1;width:100%;min-width:0;background:none;border:0;outline:0;font-size:1.15rem;font-weight:700;color:var(--text);padding:0 16px;min-height:54px;text-align:right}
+.input span{padding:0 16px;color:var(--muted);font-weight:700;font-size:.9rem;border-inline-start:1px solid var(--line)}
+.err{display:none;margin-top:12px;background:#fdecea;color:var(--danger);padding:10px 14px;border-radius:12px;font-size:.92rem;font-weight:600}
+.err.show{display:block}
+#quick-calculate{margin-top:16px}
+.result{display:none;margin-top:18px;border-top:1px dashed var(--line);padding-top:18px;animation:rise .35s ease}
+.result.show{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#f8f9fa;border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat.wide{grid-column:1/-1;background:linear-gradient(135deg,#2a48cc,#1b325e);color:#fff}
+.stat small{display:block;color:var(--muted);font-size:.8rem;font-weight:600}
+.stat.wide small{color:#dfe4ff}
+.stat strong{font-size:1.5rem;font-weight:800;line-height:1.3;display:block}
+.stat.wide strong{font-size:2rem}
+.stat strong span{font-size:.9rem;font-weight:600;opacity:.8;margin-inline-start:4px}
+.note{margin-top:12px;font-size:.85rem;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+.note i{color:var(--brand);margin-top:5px}
+
+/* ---------- sections ---------- */
+section.s{padding:52px 0 8px}
+.s-head{text-align:center;margin-bottom:24px}
+.s-head h2{font-size:1.55rem;font-weight:800;color:var(--ink)}
+.s-head p{color:var(--muted);margin-top:4px}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.feat{padding:18px 14px;text-align:center}
+.feat .ic{width:56px;height:56px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;font-size:1.35rem;color:var(--brand);background:rgba(42,72,204,.1)}
+.feat h3{font-size:1rem;font-weight:800;color:var(--ink);margin-bottom:4px}
+.feat p{font-size:.84rem;color:var(--muted);line-height:1.6}
+
+.steps{display:grid;gap:0;counter-reset:s;position:relative}
+.step{display:flex;gap:14px;padding-bottom:20px;position:relative}
+.step:not(:last-child)::before{content:"";position:absolute;inset-inline-start:21px;top:44px;bottom:0;width:2px;background:repeating-linear-gradient(var(--line) 0 6px,transparent 6px 12px)}
+.num{flex:0 0 44px;height:44px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.1rem;box-shadow:0 6px 14px rgba(42,72,204,.3)}
+.step h3{font-size:1.05rem;font-weight:800;color:var(--ink);margin-top:2px}
+.step p{color:var(--muted);font-size:.92rem}
+
+/* tariffs */
+.tiers{display:grid;gap:10px}
+.tier{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.tier .t-n{flex:0 0 auto;min-width:58px;text-align:center;font-weight:800;color:var(--brand);background:rgba(42,72,204,.1);border-radius:12px;padding:6px 8px;font-size:.88rem}
+.tier .t-m{flex:1;min-width:0}
+.tier .t-m b{display:block;font-size:.98rem;color:var(--ink)}
+.tier .t-m small{color:var(--muted);font-size:.8rem;display:block}
+.tier .t-p{flex:0 0 auto;text-align:left;font-weight:800;color:var(--ink);font-size:1.05rem;direction:rtl}
+.tier .t-p small{display:block;font-weight:600;color:var(--muted);font-size:.72rem}
+.tier.hl{border-color:#ffe69c;background:#FFF3CD}
+.tier.hl .t-n{background:#ffe69c;color:var(--warn)}
+.tier.imp{border-color:#f1aeb5;background:#F8D7DA}
+.tier.imp .t-n{background:#f1aeb5;color:#842029}
+.tier .tag{display:inline-block;margin-top:4px;font-size:.74rem;font-weight:700;padding:2px 10px;border-radius:99px;background:rgba(255,255,255,.7);color:var(--warn)}
+.tier.imp .tag{color:#842029}
+
+/* final cta */
+.final{margin:52px 0 0}
+.final .box{background:linear-gradient(135deg,#2a48cc,#1b325e);color:#fff;border-radius:24px;padding:30px 22px;text-align:center;position:relative;overflow:hidden}
+.final .box::before{content:"\f0e7";font-family:"Font Awesome 6 Free";font-weight:900;position:absolute;inset-inline-end:-10px;top:-20px;font-size:9rem;color:rgba(255,255,255,.08);transform:rotate(15deg)}
+.final h2{font-size:1.5rem;font-weight:800;position:relative}
+.final p{color:#dfe4ff;margin:6px 0 20px;position:relative}
+.final .btn{position:relative;background:#fff;color:var(--brand);box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.final .btn:hover{background:#f1f3fb}
+
+/* footer */
+footer{margin-top:44px;background:#333;color:#ccc;padding:34px 0 calc(24px + var(--safe-b))}
+.f-grid{display:grid;gap:24px}
+footer h3{color:#fff;font-size:1rem;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+footer h3 i{color:#8fa2ff}
+footer p,footer li{font-size:.9rem}
+footer ul{list-style:none;display:grid;gap:6px}
+footer a:hover{color:#fff}
+footer li i{margin-inline-end:8px;color:#8fa2ff;width:16px;text-align:center}
+.copy{border-top:1px solid #444;margin-top:24px;padding-top:16px;font-size:.8rem;text-align:center;color:#bbb}
+
+/* sticky mobile CTA */
+.sticky-cta{position:fixed;inset-inline:12px;bottom:calc(12px + var(--safe-b));z-index:40;display:none;transform:translateY(140%);transition:transform .3s ease}
+.sticky-cta.show{transform:none}
+.sticky-cta .btn{width:100%;min-height:54px;box-shadow:0 10px 24px rgba(42,72,204,.4)}
+
+/* ---------- mobile menu ---------- */
+@media (max-width:820px){
+  .burger{display:grid;place-items:center}
+  .menu{display:none;position:absolute;top:100%;inset-inline:0;background:#fff;flex-direction:column;align-items:stretch;padding:8px 14px 18px;border-top:1px solid var(--line);box-shadow:0 18px 30px rgba(0,0,0,.15)}
+  .menu.open{display:flex}
+  .menu a{padding:14px 12px;font-size:1.02rem}
+  .top-actions .btn-ghost{display:none}
+  .sticky-cta{display:block}
+  body.has-sticky{padding-bottom:calc(84px + var(--safe-b))}
+}
+@media (max-width:360px){
+  .hero h1{font-size:1.75rem}
+  .stat strong{font-size:1.25rem}
+  .tier{padding:12px}
+}
+
+/* ---------- desktop ---------- */
+@media (min-width:821px){
+  .wrap{padding:0 28px}
+  .hero{padding:64px 0 130px}
+  .hero .wrap{grid-template-columns:1.15fr .85fr;align-items:center;gap:48px}
+  .hero h1{font-size:3rem}
+  .cta{grid-template-columns:auto auto;justify-content:start}
+  .calc{margin-top:-84px}
+  .calc .card{padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start}
+  .calc .head{grid-column:1/-1}
+  .calc .head .sec-sub{margin-bottom:0}
+  .result{margin-top:0;border-top:0;padding-top:0}
+  .result.show{display:block}
+  .calc .right{min-height:100px}
+  .features{grid-template-columns:repeat(4,1fr);gap:16px}
+  .feat{padding:26px 18px}
+  .steps{grid-template-columns:repeat(4,1fr);gap:20px}
+  .step{flex-direction:column;align-items:center;text-align:center;padding-bottom:0}
+  .step:not(:last-child)::before{inset-inline-start:auto;inset-inline-end:-50%;top:21px;bottom:auto;width:100%;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px);z-index:0}
+  .num{position:relative;z-index:1}
+  .tiers{grid-template-columns:1fr 1fr}
+  .f-grid{grid-template-columns:1.4fr 1fr 1fr}
+  .final .box{padding:48px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
-    <!-- شريط التنقل -->
-    <nav class="navbar">
-        <div class="container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-bolt"></i>
-                <span>مُوفّر</span>
-            </a>
-            
-            <div class="nav-links">
-                <a href="index.html" class="active"><i class="fas fa-home"></i> الرئيسية</a>
-                <a href="login.html"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>
-                <a href="register.html"><i class="fas fa-user-plus"></i> تسجيل جديد</a>
-                <a href="#features"><i class="fas fa-star"></i> المميزات</a>
-                <a href="#how-it-works"><i class="fas fa-question-circle"></i> كيف يعمل</a>
-            </div>
-            
-            <button class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
+
+<!-- ===== Top bar ===== -->
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="logo" aria-label="مُوفّر"><i class="fas fa-bolt"></i><span>مُوفّر</span></a>
+    <nav class="menu" id="menu" aria-label="القائمة الرئيسية">
+      <a href="#calculator">الحاسبة</a>
+      <a href="#features">المميزات</a>
+      <a href="#how-it-works">كيف يعمل</a>
+      <a href="#tariffs">الشرائح</a>
     </nav>
+    <div class="top-actions" id="top-actions">
+      <a href="login.html" class="btn btn-ghost btn-sm">تسجيل الدخول</a>
+      <a href="register.html" class="btn btn-accent btn-sm">ابدأ مجاناً</a>
+    </div>
+    <button class="burger" id="burger" aria-label="فتح القائمة" aria-expanded="false" aria-controls="menu"><i class="fas fa-bars"></i></button>
+  </div>
+</header>
 
-    <!-- قسم الهيرو -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>وفر شحن عداد الكهرباء <span class="highlight">حتى 40%</span></h1>
-                <p>حاسبة ذكية تعتمد على شرائح الكهرباء المصرية 2026 تساعدك على إدارة استهلاكك وتوفير شحن العداد</p>
-                
-                <div class="cta-buttons">
-                    <a href="register.html" class="btn btn-primary">
-                        <i class="fas fa-rocket"></i> ابدأ الآن مجاناً
-                    </a>
-                    <a href="#calculator" class="btn btn-secondary">
-                        <i class="fas fa-calculator"></i> جرب الحاسبة
-                    </a>
-                </div>
-            </div>
-            
-            <div class="hero-image">
-                <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="عداد كهرباء" width="400">
-            </div>
-        </div>
-    </section>
+<main>
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="pill"><i class="fas fa-bolt"></i> محدّث وفق شرائح 2026</span>
+      <h1>وفّر في شحن عداد الكهرباء <em>بذكاء</em></h1>
+      <p class="lead">اعرف رصيدك سيكفي كام يوم، وتكلفة استهلاكك الشهري، وفي أي شريحة أنت — وتابع استهلاكك من موبايلك.</p>
+      <div class="cta">
+        <a href="register.html" class="btn btn-accent btn-block"><i class="fas fa-rocket"></i> ابدأ الآن مجاناً</a>
+        <a href="#calculator" class="btn btn-ghost btn-block"><i class="fas fa-calculator"></i> جرّب الحاسبة</a>
+      </div>
+      <div class="chips">
+        <span><i class="fas fa-check-circle"></i> مجاني</span>
+        <span><i class="fas fa-check-circle"></i> يعمل على الموبايل</span>
+        <span><i class="fas fa-check-circle"></i> بياناتك محفوظة بحسابك</span>
+      </div>
+    </div>
 
-    <!-- حاسبة سريعة -->
-    <section id="calculator" class="quick-calculator">
-        <div class="container">
-            <h2><i class="fas fa-calculator"></i> حاسبة سريعة</h2>
-            <p>جرب الحاسبة الآن بدون تسجيل (للاسترشاد فقط)</p>
-            
-            <div class="calculator-form">
-                <div class="form-group">
-                    <label for="balance"><i class="fas fa-coins"></i> الرصيد الحالي (جنيه)</label>
-                    <input type="number" id="balance" placeholder="مثال: 500" min="0" step="10" value="500">
-                </div>
-                
-                <div class="form-group">
-                    <label for="consumption"><i class="fas fa-bolt"></i> الاستهلاك الشهري التقريبي (كيلوواط)</label>
-                    <input type="number" id="consumption" placeholder="مثال: 300" min="0" step="10" value="300">
-                </div>
-                
-                <button id="quick-calculate" class="btn btn-primary">
-                    <i class="fas fa-calculator"></i> احسب توفيرك
-                </button>
-                
-                <div id="quick-result" class="result-box" style="display: none;">
-                    <h3><i class="fas fa-chart-line"></i> النتيجة</h3>
-                    <div class="result-content">
-                        <p>الرصيد سينفذ بعد: <strong><span id="days-left">0</span> يوم</strong></p>
-                        <p>التكلفة الشهرية: <strong><span id="monthly-cost">0</span> جنيه</strong></p>
-                        <p>الشريحة الحالية: <strong><span id="current-slab">-</span></strong></p>
-                    </div>
-                    <p class="note">للحصول على نتائج دقيقة، سجل وقم بإدخال أجهزتك الفعلية</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="mock" aria-hidden="true">
+      <div class="mock-h"><span>مثال توضيحي</span><b>الشريحة الرابعة</b></div>
+      <div class="mock-big">23<small>يوم متبقي</small></div>
+      <div class="bar"><i></i></div>
+      <div class="mock-f"><span>رصيد: 500 ج.م</span><span>الشهري: 650 ج.م</span></div>
+    </div>
+  </div>
+</section>
 
-    <!-- المميزات -->
-    <section id="features" class="features">
-        <div class="container">
-            <h2><i class="fas fa-star"></i> مميزات موقع مُوفّر</h2>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-calculator"></i>
-                    </div>
-                    <h3>حاسبة دقيقة</h3>
-                    <p>تعتمد على شرائح الكهرباء المصرية 2026 بدقة، مع حساب فرق الشرائح وإلغاء الدعم</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>تتبع استهلاكي</h3>
-                    <p>احفظ تاريخ استهلاكك وقارن بين الأشهر لترى تطور استهلاكك</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <h3>إشعارات ذكية</h3>
-                    <p>تنبيه عند اقتراب نفاذ الرصيد ونصائح مخصصة لتوفير الاستهلاك</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <h3>نصائح مخصصة</h3>
-                    <p>توصيات ذكية بناءً على أجهزتك وأنماط استهلاكك</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- ===== Quick calculator ===== -->
+<section id="calculator" class="calc">
+  <div class="wrap">
+    <div class="card">
+      <div class="head">
+        <h2 class="sec-title"><i class="fas fa-calculator"></i> حاسبة سريعة</h2>
+        <p class="sec-sub">جرّبها بدون تسجيل — النتيجة للاسترشاد فقط.</p>
+      </div>
 
-    <!-- كيف يعمل -->
-    <section id="how-it-works" class="how-it-works">
-        <div class="container">
-            <h2><i class="fas fa-question-circle"></i> كيف يعمل موقع مُوفّر؟</h2>
-            
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>سجل حساب مجاني</h3>
-                    <p>أنشئ حسابك في دقيقة واحدة</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>أدخل أجهزتك</h3>
-                    <p>أدخل أجهزتك المنزلية واستهلاكها وساعات التشغيل</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>احصل على تحليل كامل</h3>
-                    <p>تحليل استهلاكك وتوصيات توفير مخصصة</p>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>تتبع ووفر</h3>
-                    <p>راقب استهلاكك بمرور الوقت ووفر في فواتيرك</p>
-                </div>
-            </div>
+      <div class="left">
+        <div class="fields">
+          <div class="field">
+            <label for="balance"><i class="fas fa-coins"></i> الرصيد الحالي</label>
+            <div class="input"><input type="number" id="balance" inputmode="decimal" placeholder="500" min="0" step="10" value="500"><span>جنيه</span></div>
+          </div>
+          <div class="field">
+            <label for="consumption"><i class="fas fa-bolt"></i> الاستهلاك الشهري التقريبي</label>
+            <div class="input"><input type="number" id="consumption" inputmode="decimal" placeholder="300" min="0" step="10" value="300"><span>ك.و.س</span></div>
+          </div>
         </div>
-    </section>
+        <div class="err" id="calc-err" role="alert">يرجى إدخال أرقام أكبر من صفر.</div>
+        <button id="quick-calculate" class="btn btn-brand btn-block"><i class="fas fa-calculator"></i> احسب</button>
+      </div>
 
-    <!-- شرائح الكهرباء 2026 -->
-    <section class="tariffs">
-        <div class="container">
-            <h2><i class="fas fa-file-invoice"></i> شرائح الكهرباء المنزلية 2026</h2>
-            
-            <div class="tariff-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الشريحة</th>
-                            <th>الاستهلاك (كيلوواط)</th>
-                            <th>السعر (لكل كيلوواط)</th>
-                            <th>ملاحظات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>الأولى</td>
-                            <td>0 - 50</td>
-                            <td>68 قرش</td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>الثانية</td>
-                            <td>51 - 100</td>
-                            <td>78 قرش</td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>الثالثة</td>
-                            <td>0 - 200</td>
-                            <td>95 قرش</td>
-                            <td>تراكمي</td>
-                        </tr>
-                        <tr>
-                            <td>الرابعة</td>
-                            <td>201 - 350</td>
-                            <td>1.55 جنيه</td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>الخامسة</td>
-                            <td>351 - 650</td>
-                            <td>1.95 جنيه</td>
-                            <td>-</td>
-                        </tr>
-                        <tr class="highlight-row">
-                            <td>السادسة</td>
-                            <td>651 - 1000</td>
-                            <td>2.10 جنيه</td>
-                            <td>خصم 378 ج.م كفرق محاسبة</td>
-                        </tr>
-                        <tr class="important-row">
-                            <td>السابعة</td>
-                            <td>أكثر من 1000</td>
-                            <td>2.23 جنيه</td>
-                            <td>تحاسب من الصفر (إلغاء دعم)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+      <div class="right">
+        <div id="quick-result" class="result" aria-live="polite">
+          <div class="stats">
+            <div class="stat wide"><small>الرصيد سيكفي لحوالي</small><strong><span id="days-left" style="font-size:inherit;opacity:1;margin:0">0</span><span>يوم</span></strong></div>
+            <div class="stat"><small>التكلفة الشهرية</small><strong><span id="monthly-cost" style="font-size:inherit;opacity:1;margin:0">0</span><span>ج.م</span></strong></div>
+            <div class="stat"><small>الشريحة الحالية</small><strong id="current-slab" style="font-size:1.1rem">-</strong></div>
+          </div>
+          <p class="note"><i class="fas fa-info-circle"></i> للحصول على نتائج دقيقة، سجّل وأدخل أجهزتك الفعلية.</p>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- الفوتر -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3><i class="fas fa-bolt"></i> مُوفّر</h3>
-                    <p>منصة مصرية لمساعدة المواطنين على إدارة استهلاك الكهرباء وتوفير شحن العدادات مسبقة الدفع</p>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>روابط سريعة</h3>
-                    <ul>
-                        <li><a href="login.html">تسجيل الدخول</a></li>
-                        <li><a href="register.html">تسجيل جديد</a></li>
-                        <li><a href="#features">المميزات</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>اتصل بنا</h3>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> hakyorelekiaby@gmail.com</li>
-                        <li><i class="fas fa-phone"></i> +201017753052</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                <p>© 2026 مُوفّر - جميع الحقوق محفوظة | تم التحديث وفق أسعار شرائح الكهرباء 2026</p>
-            </div>
-        </div>
-    </footer>
+<!-- ===== Features ===== -->
+<section id="features" class="s">
+  <div class="wrap">
+    <div class="s-head"><h2>لماذا مُوفّر؟</h2><p>كل ما تحتاجه لإدارة استهلاك الكهرباء</p></div>
+    <div class="features">
+      <div class="card feat"><div class="ic"><i class="fas fa-calculator"></i></div><h3>حاسبة دقيقة</h3><p>شرائح الكهرباء 2026 مع فرق المحاسبة وإلغاء الدعم</p></div>
+      <div class="card feat"><div class="ic"><i class="fas fa-chart-line"></i></div><h3>تتبّع استهلاكك</h3><p>احفظ السجل وقارن بين الأشهر</p></div>
+      <div class="card feat"><div class="ic"><i class="fas fa-bell"></i></div><h3>إشعارات ذكية</h3><p>تنبيه عند اقتراب نفاد الرصيد</p></div>
+      <div class="card feat"><div class="ic"><i class="fas fa-lightbulb"></i></div><h3>نصائح مخصصة</h3><p>توصيات حسب أجهزتك وعاداتك</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== How it works ===== -->
+<section id="how-it-works" class="s">
+  <div class="wrap">
+    <div class="s-head"><h2>كيف يعمل؟</h2><p>أربع خطوات بسيطة</p></div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div><h3>سجّل حساباً مجانياً</h3><p>أنشئ حسابك في دقيقة واحدة</p></div></div>
+      <div class="step"><div class="num">2</div><div><h3>أدخل أجهزتك</h3><p>الأجهزة المنزلية واستهلاكها وساعات التشغيل</p></div></div>
+      <div class="step"><div class="num">3</div><div><h3>احصل على التحليل</h3><p>تحليل كامل لاستهلاكك مع توصيات توفير</p></div></div>
+      <div class="step"><div class="num">4</div><div><h3>تابع ووفّر</h3><p>راقب استهلاكك بمرور الوقت وقلّل فاتورتك</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Tariffs ===== -->
+<section id="tariffs" class="s">
+  <div class="wrap">
+    <div class="s-head"><h2>شرائح الكهرباء المنزلية 2026</h2><p>سعر الكيلوواط لكل شريحة</p></div>
+    <div class="tiers">
+      <div class="tier"><span class="t-n">الأولى</span><div class="t-m"><b>0 – 50 ك.و</b></div><div class="t-p">68<small>قرش / ك.و</small></div></div>
+      <div class="tier"><span class="t-n">الثانية</span><div class="t-m"><b>51 – 100 ك.و</b></div><div class="t-p">78<small>قرش / ك.و</small></div></div>
+      <div class="tier"><span class="t-n">الثالثة</span><div class="t-m"><b>0 – 200 ك.و</b><small>تراكمي</small></div><div class="t-p">95<small>قرش / ك.و</small></div></div>
+      <div class="tier"><span class="t-n">الرابعة</span><div class="t-m"><b>201 – 350 ك.و</b></div><div class="t-p">1.55<small>جنيه / ك.و</small></div></div>
+      <div class="tier"><span class="t-n">الخامسة</span><div class="t-m"><b>351 – 650 ك.و</b></div><div class="t-p">1.95<small>جنيه / ك.و</small></div></div>
+      <div class="tier hl"><span class="t-n">السادسة</span><div class="t-m"><b>651 – 1000 ك.و</b><span class="tag">خصم 378 ج.م كفرق محاسبة</span></div><div class="t-p">2.10<small>جنيه / ك.و</small></div></div>
+      <div class="tier imp"><span class="t-n">السابعة</span><div class="t-m"><b>أكثر من 1000 ك.و</b><span class="tag">تحاسب من الصفر (إلغاء دعم)</span></div><div class="t-p">2.23<small>جنيه / ك.و</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Final CTA ===== -->
+<section class="final">
+  <div class="wrap">
+    <div class="box">
+      <h2>جاهز توفّر في فاتورتك؟</h2>
+      <p>أنشئ حسابك المجاني وابدأ التتبّع الآن</p>
+      <a href="register.html" class="btn btn-accent"><i class="fas fa-rocket"></i> ابدأ مجاناً</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <h3><i class="fas fa-bolt"></i> مُوفّر</h3>
+        <p>منصة مصرية لمساعدة المواطنين على إدارة استهلاك الكهرباء وتوفير شحن العدادات مسبقة الدفع.</p>
+      </div>
+      <div>
+        <h3>روابط سريعة</h3>
+        <ul>
+          <li><a href="login.html">تسجيل الدخول</a></li>
+          <li><a href="register.html">تسجيل جديد</a></li>
+          <li><a href="#features">المميزات</a></li>
+          <li><a href="help-guide.html">دليل المساعدة</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>اتصل بنا</h3>
+        <ul>
+          <li><a href="mailto:hakyorelekiaby@gmail.com"><i class="fas fa-envelope"></i>hakyorelekiaby@gmail.com</a></li>
+          <li><a href="tel:+201017753052"><i class="fas fa-phone"></i><span dir="ltr">+201017753052</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copy">© 2026 مُوفّر — جميع الحقوق محفوظة | محدّث وفق أسعار الشرائح 2026</div>
+  </div>
+</footer>
+
+<div class="sticky-cta" id="sticky-cta"><a href="register.html" class="btn btn-accent"><i class="fas fa-rocket"></i> ابدأ مجاناً</a></div>
+
+<script src="js/calculator.js"></script>
+<script src="js/auth.js?v=2"></script>
 <script>
-// تحديث الحاسبة السريعة في الصفحة الرئيسية
-document.addEventListener('DOMContentLoaded', function() {
-    const quickCalculateBtn = document.getElementById('quick-calculate');
-    
-    if (quickCalculateBtn) {
-        quickCalculateBtn.addEventListener('click', function() {
-            const balance = parseFloat(document.getElementById('balance').value) || 0;
-            const consumption = parseFloat(document.getElementById('consumption').value) || 0;
-            
-            if (balance <= 0 || consumption <= 0) {
-                alert('يرجى إدخال قيم صحيحة');
-                return;
-            }
-            
-            // استخدام الآلة الحاسبة العامة
-            if (window.ElectricityCalculator) {
-                const monthlyCost = window.ElectricityCalculator.calculateElectricityCost(consumption);
-                const daysLeft = monthlyCost > 0 ? Math.floor((balance / monthlyCost) * 30) : 0;
-                const currentSlab = window.ElectricityCalculator.getCurrentSlab(consumption);
-                
-                document.getElementById('days-left').textContent = daysLeft;
-                document.getElementById('monthly-cost').textContent = monthlyCost.toFixed(2);
-                document.getElementById('current-slab').textContent = currentSlab;
-                
-                document.getElementById('quick-result').style.display = 'block';
-            }
-        });
-    }
-    
-    // التحقق من حالة تسجيل الدخول
-    if (window.Auth && window.Auth.isLoggedIn()) {
-        // تحديث روابط التنقل
-        const navLinks = document.querySelector('.nav-links');
-        if (navLinks) {
-            navLinks.innerHTML = `
-                <a href="index.html" class="active"><i class="fas fa-home"></i> الرئيسية</a>
-                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
-                <a href="data-entry.html"><i class="fas fa-edit"></i> إدخال البيانات</a>
-                <a href="#" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
-            `;
-        }
-    }
+document.addEventListener('DOMContentLoaded', function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ----- mobile menu -----
+  var burger = $('burger'), menu = $('menu');
+  burger.addEventListener('click', function () {
+    var open = menu.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open);
+    burger.querySelector('i').className = open ? 'fas fa-times' : 'fas fa-bars';
+  });
+  menu.addEventListener('click', function (e) {
+    if (e.target.closest('a')) { menu.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); burger.querySelector('i').className = 'fas fa-bars'; }
+  });
+
+  // ----- quick calculator -----
+  function calc() {
+    var balance = parseFloat($('balance').value) || 0;
+    var kwh = parseFloat($('consumption').value) || 0;
+    var err = $('calc-err'), box = $('quick-result');
+    if (balance <= 0 || kwh <= 0) { err.classList.add('show'); box.classList.remove('show'); return; }
+    err.classList.remove('show');
+    var C = window.ElectricityCalculator;
+    if (!C) { err.textContent = 'تعذر تحميل الحاسبة، أعد تحميل الصفحة.'; err.classList.add('show'); return; }
+    var cost = C.calculateElectricityCost(kwh);
+    var days = cost > 0 ? Math.floor((balance / cost) * 30) : 0;
+    $('days-left').textContent = days;
+    $('monthly-cost').textContent = cost.toFixed(2);
+    $('current-slab').textContent = C.getCurrentSlab(kwh);
+    box.classList.add('show');
+    if (window.innerWidth < 821) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  $('quick-calculate').addEventListener('click', calc);
+  ['balance', 'consumption'].forEach(function (id) {
+    $(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') calc(); });
+  });
+
+  // ----- signed-in state -----
+  var logged = window.Auth && window.Auth.isLoggedIn && window.Auth.isLoggedIn();
+  if (logged) {
+    $('top-actions').innerHTML = '<a href="dashboard.html" class="btn btn-accent btn-sm"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>';
+    document.querySelectorAll('a[href="register.html"]').forEach(function (a) {
+      a.setAttribute('href', 'dashboard.html');
+      a.innerHTML = a.innerHTML.replace('ابدأ الآن مجاناً', 'لوحة التحكم').replace('ابدأ مجاناً', 'لوحة التحكم');
+    });
+  }
+
+  // ----- sticky CTA: show after the hero, hide near the footer -----
+  var sticky = $('sticky-cta');
+  if (!logged) {
+    document.body.classList.add('has-sticky');
+    var hero = document.querySelector('.hero'), footer = document.querySelector('footer');
+    var update = function () {
+      var past = window.scrollY > hero.offsetHeight - 80;
+      var nearEnd = footer.getBoundingClientRect().top < window.innerHeight - 40;
+      sticky.classList.toggle('show', past && !nearEnd);
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  } else { sticky.remove(); }
 });
 </script>
-    <script src="js/calculator.js"></script>
-    <script src="js/auth.js?v=2"></script>
-    <script src="js/mobile.js"></script>
 </body>
 </html>
